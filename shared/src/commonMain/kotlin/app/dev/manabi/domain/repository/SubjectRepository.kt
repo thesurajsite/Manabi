@@ -6,7 +6,7 @@ interface SubjectRepository {
 
     suspend fun getSubjects(): List<Subject>
 
-    suspend fun insertSubject(
+    suspend fun addSubject(
         subject: Subject
     )
 }

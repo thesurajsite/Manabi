@@ -15,7 +15,7 @@ class SubjectRepositoryImpl(
             .map { it.toDomain() }
     }
 
-    override suspend fun insertSubject(
+    override suspend fun addSubject(
         subject: Subject
     ) {
         localDataSource.insertSubject(
