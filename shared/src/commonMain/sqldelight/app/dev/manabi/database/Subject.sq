@@ -1,0 +1,46 @@
+CREATE TABLE Subject (
+    id INTEGER NOT NULL PRIMARY KEY,
+    subjectName TEXT NOT NULL,
+    conducted INTEGER NOT NULL,
+    attended INTEGER NOT NULL,
+    requirement INTEGER NOT NULL,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+);
+
+getAllSubjects:
+SELECT * FROM Subject;
+
+getSubjectById:
+SELECT * FROM Subject
+WHERE id = ?;
+
+insertSubject:
+INSERT INTO Subject(
+    id,
+    subjectName,
+    conducted,
+    attended,
+    requirement,
+    createdAt,
+    updatedAt
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateSubject:
+UPDATE Subject
+SET
+    subjectName = ?,
+    conducted = ?,
+    attended = ?,
+    requirement = ?,
+    createdAt = ?,
+    updatedAt = ?
+WHERE id = ?;
+
+deleteSubject:
+DELETE FROM Subject
+WHERE id = ?;
+
+deleteAllSubjects:
+DELETE FROM Subject;
