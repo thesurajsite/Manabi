@@ -1,4 +1,4 @@
-package app.dev.manabi.presentation.navigation
+package app.dev.manabi.presentation.screens
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Box
@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.dev.manabi.presentation.navigation.Screen
+import app.dev.manabi.presentation.navigation.TopLevelNavHost
 import app.dev.manabi.presentation.navigation.components.BottomBar
 import app.dev.manabi.presentation.navigation.components.NavigationRailBar
 
@@ -40,19 +42,19 @@ fun MainScreen() {
                 )
             }
         } else {
-            val railWidth = 96.dp
-            val contentWidth = maxWidth - railWidth
+            val railWidth = 60.dp
 
             Row(
                 modifier = Modifier.fillMaxSize()
             ) {
                 NavigationRailBar(
                     currentScreen = currentScreenState.value,
-                    onNavigate = { currentScreenState.value = it }
+                    onNavigate = { currentScreenState.value = it },
+                    modifier = Modifier.width(railWidth),
                 )
                 Box(
                     modifier = Modifier
-                        .width(contentWidth)
+                        .weight(1f)
                         .fillMaxSize()
                 ) {
                     TopLevelNavHost(

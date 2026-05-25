@@ -12,14 +12,19 @@ import app.dev.manabi.presentation.navigation.Screen
 @Composable
 fun NavigationRailBar(
     currentScreen: Screen,
-    onNavigate: (Screen) -> Unit
+    onNavigate: (Screen) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    NavigationRail {
+    NavigationRail(modifier = modifier) {
         Column(
             modifier = Modifier.padding(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            navigationItems(currentScreen, onNavigate)
+            NavigationItems(
+                currentScreen = currentScreen,
+                onNavigate = onNavigate,
+                showLabel = false,
+            )
         }
     }
 }
