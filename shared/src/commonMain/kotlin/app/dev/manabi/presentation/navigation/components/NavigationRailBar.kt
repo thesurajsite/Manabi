@@ -1,4 +1,4 @@
-package app.dev.manabi.presentation.navigation
+package app.dev.manabi.presentation.navigation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,19 +7,19 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.dev.manabi.presentation.navigation.Screen
 
 @Composable
 fun NavigationRailBar(
-    currentRoute: String,
-    onNavigate: (String) -> Unit
+    currentScreen: Screen,
+    onNavigate: (Screen) -> Unit
 ) {
-
     NavigationRail {
         Column(
             modifier = Modifier.padding(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            navigationItems(currentRoute, onNavigate)
+            navigationItems(currentScreen, onNavigate)
         }
     }
 }

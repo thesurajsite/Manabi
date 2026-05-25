@@ -7,24 +7,23 @@ import app.dev.manabi.presentation.screens.Productivity.ProductivityScreen
 import app.dev.manabi.presentation.screens.Schedule.ScheduleScreen
 
 @Composable
-fun MainNavHost(
-    currentRoute: String,
+fun TopLevelNavHost(
+    currentScreen: Screen = Screen.MainGraph.Attendance,
     isMobile: Boolean,
     modifier: Modifier = Modifier
 ) {
-
-    when (currentRoute) {
-        MainDestination.Productivity.route -> ProductivityScreen(
+    when (currentScreen) {
+        Screen.MainGraph.Attendance -> AttendanceScreen(
             isMobile = isMobile,
             modifier = modifier
         )
 
-        MainDestination.Schedule.route -> ScheduleScreen(
+        Screen.MainGraph.Productivity -> ProductivityScreen(
             isMobile = isMobile,
             modifier = modifier
         )
 
-        else -> AttendanceScreen(
+        Screen.MainGraph.Schedule -> ScheduleScreen(
             isMobile = isMobile,
             modifier = modifier
         )

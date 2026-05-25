@@ -12,11 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.dev.manabi.presentation.navigation.components.BottomBar
+import app.dev.manabi.presentation.navigation.components.NavigationRailBar
 
 @Composable
 fun MainScreen() {
 
-    val currentRouteState = remember { mutableStateOf(MainDestination.Attendance.route) }
+    val currentScreenState = remember { mutableStateOf<Screen>(Screen.MainGraph.Attendance) }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isMobile = maxWidth < 600.dp
@@ -25,14 +27,14 @@ fun MainScreen() {
             Scaffold(
                 bottomBar = {
                     BottomBar(
-                        currentRoute = currentRouteState.value,
-                        onNavigate = { currentRouteState.value = it }
+                        currentScreen = currentScreenState.value,
+                        onNavigate = { currentScreenState.value = it }
                     )
                 }
             ) { paddingValues ->
 
-                MainNavHost(
-                    currentRoute = currentRouteState.value,
+                TopLevelNavHost(
+                    currentScreen = currentScreenState.value,
                     isMobile = true,
                     modifier = Modifier.padding(paddingValues)
                 )
@@ -45,16 +47,16 @@ fun MainScreen() {
                 modifier = Modifier.fillMaxSize()
             ) {
                 NavigationRailBar(
-                    currentRoute = currentRouteState.value,
-                    onNavigate = { currentRouteState.value = it }
+                    currentScreen = currentScreenState.value,
+                    onNavigate = { currentScreenState.value = it }
                 )
                 Box(
                     modifier = Modifier
                         .width(contentWidth)
                         .fillMaxSize()
                 ) {
-                    MainNavHost(
-                        currentRoute = currentRouteState.value,
+                    TopLevelNavHost(
+                        currentScreen = currentScreenState.value,
                         isMobile = false,
                         modifier = Modifier.fillMaxSize()
                     )
