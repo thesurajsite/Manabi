@@ -1,4 +1,4 @@
-package app.dev.manabi.presentation.screens.Attendance
+package app.dev.manabi.presentation.screens.attendance
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

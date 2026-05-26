@@ -13,8 +13,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
-    debugImplementation(libs.compose.uiTooling)
 }
 
 android {

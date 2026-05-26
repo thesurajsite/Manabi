@@ -41,6 +41,8 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.compose.ui.tooling.preview)
+            implementation(libs.androidx.compose.ui.tooling)
             implementation(libs.sqldelight.android.driver)
         }
         commonMain.dependencies {
@@ -55,6 +57,7 @@ kotlin {
 
             implementation(libs.sqldelight.runtime)
             implementation(libs.sqldelight.coroutines)
+            implementation(compose.materialIconsExtended)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -70,6 +73,7 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+    androidRuntimeClasspath(libs.androidx.compose.ui.tooling)
 }
 
 sqldelight {

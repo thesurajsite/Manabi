@@ -2,9 +2,9 @@ package app.dev.manabi.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import app.dev.manabi.presentation.screens.Attendance.AttendanceScreen
 import app.dev.manabi.presentation.screens.Productivity.ProductivityScreen
 import app.dev.manabi.presentation.screens.Schedule.ScheduleScreen
+import app.dev.manabi.presentation.screens.attendance.AttendanceScreen
 
 @Composable
 fun TopLevelNavHost(

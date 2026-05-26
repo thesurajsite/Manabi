@@ -1,4 +1,4 @@
-package app.dev.manabi.presentation.screens.Attendance
+package app.dev.manabi.presentation.screens.attendance
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

@@ -24,15 +24,16 @@ import androidx.compose.ui.unit.sp
 fun AttendanceItem(){
 
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.White)
+            .background(Color.Magenta)
             .clip(RoundedCornerShape(10.dp))
     ){
         Row{
             // % Circle
             Box(
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(40.dp)
                     .clip(CircleShape)
                     .background(Color.Red),
                 contentAlignment = Alignment.Center
@@ -48,9 +49,9 @@ fun AttendanceItem(){
 
             // Subject Name
             Text(
-                text = "Rock Mechanics",
+                text = "Rock\nMechanics",
                 color = Color.Black,
-                fontSize = 20.sp
+                fontSize = 18.sp
             )
 
             Spacer(Modifier.width(10.dp))
@@ -58,7 +59,7 @@ fun AttendanceItem(){
             Text(
                 text = "C: 26 | A: 20",
                 color = Color.Black,
-                fontSize = 20.sp
+                fontSize = 18.sp
             )
 
         }
