@@ -1,8 +1,5 @@
-package app.dev.manabi.data.model
+package app.dev.manabi.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Subject(
     val id: Long,
     val subjectName: String,
