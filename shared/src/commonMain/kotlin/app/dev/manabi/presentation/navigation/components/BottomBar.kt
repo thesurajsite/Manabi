@@ -66,13 +66,14 @@ fun NavigationItems(
                     painter = painterResource(icon),
                     contentDescription = item.label,
                     modifier = Modifier.size(24.dp),
-                    colorFilter = if (selected) ColorFilter.tint(SelectedIconTint) else null,
+                    colorFilter = if (selected) ColorFilter.tint(SelectedIconTint) else ColorFilter.tint(Color.Black),
                 )
 
                 if (showLabel) {
                     Text(
                         text = item.label,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (selected) SelectedIconTint else Color.Black
                     )
                 }
             }
