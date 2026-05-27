@@ -1,20 +1,17 @@
 package app.dev.manabi.presentation.screens.attendance
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.dev.manabi.presentation.components.ScreenHeader
+import app.dev.manabi.presentation.screens.attendance.components.AttendanceListPane
 
 @Composable
 fun AttendanceDesktopScreen(modifier: Modifier) {
@@ -24,20 +21,18 @@ fun AttendanceDesktopScreen(modifier: Modifier) {
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ScreenHeader(
-            title = "Attendance",
-            subtitle = "Desktop layout"
-        )
-
         Row{
+            // Attendance List Pane
             Box(
                 modifier = Modifier
-                    .weight(0.4f)
+                    .weight(0.35f)
                     .clip(RoundedCornerShape(15.dp))
             ){
-                SubjectListScreen()
+                AttendanceListPane()
             }
-            Box(modifier = Modifier.weight(0.6f)){
+
+            // Attendance Detail Pane
+            Box(modifier = Modifier.weight(0.65f)){
 
             }
         }

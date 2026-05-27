@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import app.dev.manabi.presentation.navigation.Screen
 import app.dev.manabi.presentation.navigation.navigationItems
 
-private val SelectedIconTint = Color(0xFF9C27B0)
+private val SelectedIconTint = Color(0xFF6C63FF)
 
 @Composable
 fun BottomBar(
