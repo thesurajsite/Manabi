@@ -7,19 +7,39 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import app.dev.manabi.presentation.screens.MainScreen
+import app.dev.manabi.presentation.screens.attendance.EditAttendanceMobileScreen
 
 @Composable
 @Preview
 fun App() {
-    // Simple, common-friendly nav "controller" — holds the current route
-    val currentRoute = remember { mutableStateOf("main") }
+    val navigationStack = remember { mutableStateOf(listOf("main")) }
+    val currentRoute = navigationStack.value.last()
 
     MaterialTheme {
-        when (currentRoute.value) {
+        when (currentRoute) {
 
             "main" -> {
-                // start destination is MainScreen
-                MainScreen()
+                // start destination
+                MainScreen(
+                    onNavigateToEditAttendance = {
+                        navigationStack.value += "editAttendance"
+                    }
+                )
+            }
+
+            "editAttendance" -> {
+                BackHandler(onBack = {
+                    if (navigationStack.value.size > 1) {
+                        navigationStack.value = navigationStack.value.dropLast(1)
+                    }
+                })
+                EditAttendanceMobileScreen(
+                    onBack = {
+                        if (navigationStack.value.size > 1) {
+                            navigationStack.value = navigationStack.value.dropLast(1)
+                        }
+                    }
+                )
             }
 
             // additional routes may be added here

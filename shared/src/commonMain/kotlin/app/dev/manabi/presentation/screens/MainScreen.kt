@@ -18,7 +18,9 @@ import app.dev.manabi.presentation.navigation.components.BottomBar
 import app.dev.manabi.presentation.navigation.components.NavigationRailBar
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onNavigateToEditAttendance: () -> Unit
+) {
 
     val currentScreenState = remember { mutableStateOf<Screen>(Screen.MainGraph.Attendance) }
 
@@ -38,6 +40,7 @@ fun MainScreen() {
                 TopLevelNavHost(
                     currentScreen = currentScreenState.value,
                     isMobile = true,
+                    onNavigateToEditAttendance = onNavigateToEditAttendance,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -60,6 +63,7 @@ fun MainScreen() {
                     TopLevelNavHost(
                         currentScreen = currentScreenState.value,
                         isMobile = false,
+                        onNavigateToEditAttendance = onNavigateToEditAttendance,
                         modifier = Modifier.fillMaxSize()
                     )
                 }

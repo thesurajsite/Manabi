@@ -10,11 +10,13 @@ import app.dev.manabi.presentation.screens.attendance.AttendanceScreen
 fun TopLevelNavHost(
     currentScreen: Screen = Screen.MainGraph.Attendance,
     isMobile: Boolean,
+    onNavigateToEditAttendance: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (currentScreen) {
         Screen.MainGraph.Attendance -> AttendanceScreen(
             isMobile = isMobile,
+            onNavigateToEditAttendance = onNavigateToEditAttendance,
             modifier = modifier
         )
 
