@@ -6,10 +6,13 @@ import androidx.compose.ui.Modifier
 @Composable
 fun AttendanceScreen(
     isMobile: Boolean,
+    onNavigateToEditAttendance: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (isMobile) {
-        AttendanceMobileScreen(modifier)
+        AttendanceMobileScreen(
+            onNavigateToEditAttendance = onNavigateToEditAttendance,
+            modifier = modifier)
     } else {
         AttendanceDesktopScreen(modifier)
     }

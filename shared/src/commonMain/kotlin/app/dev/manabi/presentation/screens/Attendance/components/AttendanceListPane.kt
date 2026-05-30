@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.dev.manabi.domain.model.Subject
@@ -41,8 +40,7 @@ val filterTabs = listOf("All", "On Track", "At Risk", "Can Miss", "Must Go")
 
 @Composable
 fun AttendanceListPane(
-    subjects: List<Subject> = sampleSubjects,
-    onSubjectClick: (Subject) -> Unit = {},
+    onSubjectClick: () -> Unit,
 ) {
     var selectedFilter by remember { mutableStateOf("All") }
 
@@ -133,10 +131,10 @@ fun AttendanceListPane(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 12.dp)
         ) {
-            subjects.forEach { subject ->
+            sampleSubjects.forEach { subject ->
                 SubjectItem(
                     subject = subject,
-                    onClick = { onSubjectClick(subject) }
+                    onClick = onSubjectClick
                 )
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
@@ -144,14 +142,5 @@ fun AttendanceListPane(
                 )
             }
         }
-    }
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun SubjectListScreenPreview() {
-    MaterialTheme {
-        AttendanceListPane()
     }
 }

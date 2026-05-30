@@ -10,13 +10,20 @@ import androidx.compose.ui.unit.dp
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceListPane
 
 @Composable
-fun AttendanceMobileScreen(modifier: Modifier) {
+fun AttendanceMobileScreen(
+    onNavigateToEditAttendance: () -> Unit,
+    modifier: Modifier,
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        AttendanceListPane()
+        AttendanceListPane(
+            onSubjectClick = {
+                onNavigateToEditAttendance()
+            }
+        )
     }
 }
