@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.dev.manabi.presentation.navigation.Screen
@@ -19,10 +17,10 @@ import app.dev.manabi.presentation.navigation.components.NavigationRailBar
 
 @Composable
 fun MainScreen(
+    currentScreen: Screen,
+    onNavigateToMain: (Screen) -> Unit,
     onNavigateToEditAttendance: () -> Unit
 ) {
-
-    val currentScreenState = remember { mutableStateOf<Screen>(Screen.MainGraph.Attendance) }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isMobile = maxWidth < 600.dp
@@ -31,14 +29,14 @@ fun MainScreen(
             Scaffold(
                 bottomBar = {
                     BottomBar(
-                        currentScreen = currentScreenState.value,
-                        onNavigate = { currentScreenState.value = it }
+                        currentScreen = currentScreen,
+                        onNavigate = onNavigateToMain
                     )
                 }
             ) { paddingValues ->
 
                 TopLevelNavHost(
-                    currentScreen = currentScreenState.value,
+                    currentScreen = currentScreen,
                     isMobile = true,
                     onNavigateToEditAttendance = onNavigateToEditAttendance,
                     modifier = Modifier.padding(paddingValues)
@@ -51,8 +49,8 @@ fun MainScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 NavigationRailBar(
-                    currentScreen = currentScreenState.value,
-                    onNavigate = { currentScreenState.value = it },
+                    currentScreen = currentScreen,
+                    onNavigate = onNavigateToMain,
                     modifier = Modifier.width(railWidth),
                 )
                 Box(
@@ -61,7 +59,7 @@ fun MainScreen(
                         .fillMaxSize()
                 ) {
                     TopLevelNavHost(
-                        currentScreen = currentScreenState.value,
+                        currentScreen = currentScreen,
                         isMobile = false,
                         onNavigateToEditAttendance = onNavigateToEditAttendance,
                         modifier = Modifier.fillMaxSize()

@@ -1,7 +1,6 @@
 package app.dev.manabi
 
 import android.os.Build
-import androidx.compose.runtime.Composable
 
 class AndroidPlatform : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
@@ -9,7 +8,3 @@ class AndroidPlatform : Platform {
 
 actual fun getPlatform(): Platform = AndroidPlatform()
 
-@Composable
-actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
-    androidx.activity.compose.BackHandler(enabled, onBack)
-}

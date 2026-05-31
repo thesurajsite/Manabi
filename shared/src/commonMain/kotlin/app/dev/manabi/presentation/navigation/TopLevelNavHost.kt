@@ -8,7 +8,7 @@ import app.dev.manabi.presentation.screens.attendance.AttendanceScreen
 
 @Composable
 fun TopLevelNavHost(
-    currentScreen: Screen = Screen.MainGraph.Attendance,
+    currentScreen: Screen,
     isMobile: Boolean,
     onNavigateToEditAttendance: () -> Unit,
     modifier: Modifier = Modifier
@@ -30,5 +30,6 @@ fun TopLevelNavHost(
             modifier = modifier
         )
 
+        Screen.EditAttendance -> Unit
     }
 }
