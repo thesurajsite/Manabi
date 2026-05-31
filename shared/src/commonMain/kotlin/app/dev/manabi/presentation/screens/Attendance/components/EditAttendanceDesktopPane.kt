@@ -77,7 +77,7 @@ data class AttendanceState(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditAttendancePane(
+fun EditAttendanceDesktopPane(
     isMobile: Boolean,
     onBack: () -> Unit = {}
 ) {

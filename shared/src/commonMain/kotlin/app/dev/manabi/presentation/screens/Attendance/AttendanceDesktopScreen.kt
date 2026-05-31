@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceListPane
-import app.dev.manabi.presentation.screens.attendance.components.EditAttendancePane
+import app.dev.manabi.presentation.screens.attendance.components.EditAttendanceDesktopPane
 
 @Composable
 fun AttendanceDesktopScreen(modifier: Modifier) {
@@ -46,7 +46,7 @@ fun AttendanceDesktopScreen(modifier: Modifier) {
                     .weight(0.65f)
                     .clip(RoundedCornerShape(15.dp))
             ){
-                EditAttendancePane(
+                EditAttendanceDesktopPane(
                     isMobile = false
                 )
             }
