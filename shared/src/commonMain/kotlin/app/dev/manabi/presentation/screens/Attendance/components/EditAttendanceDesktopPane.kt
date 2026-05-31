@@ -23,38 +23,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.dev.manabi.presentation.theme.primary
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-private val Purple600  = Color(0xFF6C5CE7)
-private val Purple800  = Color(0xFF3C3489)
-private val Purple100  = Color(0xFFEEEDFE)
-private val Purple200  = Color(0xFFAFA9EC)
 
-private val Pink50     = Color(0xFFFFF0F3)
-private val Pink100    = Color(0xFFFFD6DE)
-private val Pink600    = Color(0xFFD4537E)
-private val Pink800    = Color(0xFF72243E)
-private val Pink900    = Color(0xFF993556)
 
-private val Blue50     = Color(0xFFEEF6FF)
-private val Blue100    = Color(0xFFC8E0FA)
-private val Blue400    = Color(0xFF378ADD)
-private val Blue800    = Color(0xFF0C447C)
-private val Blue900    = Color(0xFF185FA5)
-
-private val Teal50     = Color(0xFFEDFBF5)
-private val Teal100    = Color(0xFFB2EDDA)
 private val Teal400    = Color(0xFF1D9E75)
-private val Teal800    = Color(0xFF085041)
-private val Teal900    = Color(0xFF0F6E56)
-
 private val Danger     = Color(0xFFFF6B6B)
 private val White      = Color(0xFFFFFFFF)
-private val BgScreen   = Color(0xFFF4F3FF)
-private val TextMuted  = Color(0xFF888888)
-private val TextLight  = Color(0xFFBBBBBB)
 
 data class AttendanceState(
     val requirement: Int = 75,
@@ -160,20 +138,12 @@ fun EditAttendanceDesktopPane(
         Box(
             modifier = Modifier.fillMaxWidth(0.8f)
         ){
-            // Requirement section — pink
+            // Requirement section
             StepperSection(
                 icon = Icons.Filled.TrackChanges,
                 title = "Requirement",
                 pill = "target",
                 value = "${state.requirement}%",
-                bgColor = Pink50,
-                chipColor = Pink100,
-                iconColor = Pink900,
-                titleColor = Pink900,
-                pillColor = Pink600,
-                valueColor = Pink800,
-                btnColor = Pink100,
-                minusBtnTextColor = Pink900,
                 onMinus = {
                     state = state.copy(requirement = max(0, state.requirement - 5))
                 },
@@ -186,21 +156,15 @@ fun EditAttendanceDesktopPane(
 
         Spacer(Modifier.height(10.dp))
 
-        if(isMobile){
+        Row(
+            modifier = Modifier.fillMaxWidth(0.8f)
+        ){
             // Classes conducted — blue
             StepperSection(
                 icon = Icons.Filled.School,
                 title = "Classes conducted",
                 pill = "total",
                 value = "${state.conducted}",
-                bgColor = Blue50,
-                chipColor = Blue100,
-                iconColor = Blue900,
-                titleColor = Blue900,
-                pillColor = Blue400,
-                valueColor = Blue800,
-                btnColor = Blue100,
-                minusBtnTextColor = Blue900,
                 onMinus = {
                     val newC = max(0, state.conducted - 1)
                     state = state.copy(
@@ -214,7 +178,7 @@ fun EditAttendanceDesktopPane(
                 modifier = Modifier.weight(0.8f)
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
             // Classes attended — teal
             StepperSection(
@@ -222,14 +186,6 @@ fun EditAttendanceDesktopPane(
                 title = "Classes attended",
                 pill = "yours",
                 value = "${state.attended}",
-                bgColor = Teal50,
-                chipColor = Teal100,
-                iconColor = Teal900,
-                titleColor = Teal900,
-                pillColor = Teal400,
-                valueColor = Teal800,
-                btnColor = Teal100,
-                minusBtnTextColor = Teal900,
                 onMinus = {
                     state = state.copy(attended = max(0, state.attended - 1))
                 },
@@ -240,66 +196,6 @@ fun EditAttendanceDesktopPane(
                 },
                 modifier = Modifier.weight(0.8f)
             )
-        }
-        else{ // Is Desktop
-            Row(
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ){
-                // Classes conducted — blue
-                StepperSection(
-                    icon = Icons.Filled.School,
-                    title = "Classes conducted",
-                    pill = "total",
-                    value = "${state.conducted}",
-                    bgColor = Blue50,
-                    chipColor = Blue100,
-                    iconColor = Blue900,
-                    titleColor = Blue900,
-                    pillColor = Blue400,
-                    valueColor = Blue800,
-                    btnColor = Blue100,
-                    minusBtnTextColor = Blue900,
-                    onMinus = {
-                        val newC = max(0, state.conducted - 1)
-                        state = state.copy(
-                            conducted = newC,
-                            attended = minOf(state.attended, newC)
-                        )
-                    },
-                    onPlus = {
-                        state = state.copy(conducted = state.conducted + 1)
-                    },
-                    modifier = Modifier.weight(0.8f)
-                )
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                // Classes attended — teal
-                StepperSection(
-                    icon = Icons.Filled.CheckCircle,
-                    title = "Classes attended",
-                    pill = "yours",
-                    value = "${state.attended}",
-                    bgColor = Teal50,
-                    chipColor = Teal100,
-                    iconColor = Teal900,
-                    titleColor = Teal900,
-                    pillColor = Teal400,
-                    valueColor = Teal800,
-                    btnColor = Teal100,
-                    minusBtnTextColor = Teal900,
-                    onMinus = {
-                        state = state.copy(attended = max(0, state.attended - 1))
-                    },
-                    onPlus = {
-                        state = state.copy(
-                            attended = minOf(state.conducted, state.attended + 1)
-                        )
-                    },
-                    modifier = Modifier.weight(0.8f)
-                )
-            }
-
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -426,23 +322,15 @@ fun StepperSection(
     title: String,
     pill: String,
     value: String,
-    bgColor: Color,
-    chipColor: Color,
-    iconColor: Color,
-    titleColor: Color,
-    pillColor: Color,
-    valueColor: Color,
-    btnColor: Color,
-    minusBtnTextColor: Color,
     onMinus: () -> Unit,
     onPlus: () -> Unit,
     modifier: Modifier,
 ) {
     Column(
         modifier = modifier
-            .border(width = 2.dp, color = iconColor, shape = RoundedCornerShape(18.dp))
+            .border(width = 2.dp, color = primary, shape = RoundedCornerShape(18.dp))
             .clip(RoundedCornerShape(18.dp))
-            .background(bgColor)
+            .background(primary)
             .padding(14.dp)
     ) {
         // Header row
@@ -455,36 +343,37 @@ fun StepperSection(
                 modifier = Modifier
                     .size(30.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(chipColor)
+                    .background(Color.White)
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = iconColor,
+                    tint = primary,
                     modifier = Modifier.size(16.dp)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = title,
+                text = "$title",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = titleColor,
+                color = Color.White,
                 letterSpacing = 0.4.sp,
                 maxLines = 2
             )
             Spacer(modifier = Modifier.weight(1f))
+
             // Pill badge
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
-                    .background(chipColor)
+                    .background(Color.White)
                     .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = pill,
+                    text = "$pill",
                     fontSize = 11.sp,
-                    color = pillColor,
+                    color = primary,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -504,12 +393,12 @@ fun StepperSection(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(btnColor)
+                    .background(Color.White)
             ) {
                 Text(
                     text = "−",
                     fontSize = 22.sp,
-                    color = minusBtnTextColor,
+                    color = primary,
                     fontWeight = FontWeight.Normal
                 )
             }
@@ -520,14 +409,14 @@ fun StepperSection(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(chipColor)
+                    .background(Color.White)
                     .padding(vertical = 10.dp)
             ) {
                 Text(
-                    text = value,
+                    text = "$value",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = valueColor
+                    color = primary
                 )
             }
 
@@ -537,12 +426,12 @@ fun StepperSection(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(btnColor)
+                    .background(Color.White)
             ) {
                 Text(
                     text = "+",
                     fontSize = 22.sp,
-                    color = White,
+                    color = primary,
                     fontWeight = FontWeight.Normal
                 )
             }

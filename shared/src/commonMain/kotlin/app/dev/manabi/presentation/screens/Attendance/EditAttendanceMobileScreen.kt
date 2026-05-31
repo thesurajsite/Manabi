@@ -46,29 +46,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-private val Pink50     = Color(0xFFFFF0F3)
-private val Pink100    = Color(0xFFFFD6DE)
-private val Pink600    = Color(0xFFD4537E)
-private val Pink800    = Color(0xFF72243E)
-private val Pink900    = Color(0xFF993556)
 
-private val Blue50     = Color(0xFFEEF6FF)
-private val Blue100    = Color(0xFFC8E0FA)
-private val Blue400    = Color(0xFF378ADD)
-private val Blue800    = Color(0xFF0C447C)
-private val Blue900    = Color(0xFF185FA5)
-
-private val Teal50     = Color(0xFFEDFBF5)
-private val Teal100    = Color(0xFFB2EDDA)
-private val Teal400    = Color(0xFF1D9E75)
-private val Teal800    = Color(0xFF085041)
-private val Teal900    = Color(0xFF0F6E56)
-
-private val Danger     = Color(0xFFFF6B6B)
-private val White      = Color(0xFFFFFFFF)
-private val BgScreen   = Color(0xFFF4F3FF)
-private val TextMuted  = Color(0xFF888888)
-private val TextLight  = Color(0xFFBBBBBB)
+private val White = Color(0xFFFFFFFF)
 
 data class AttendanceState(
     val requirement: Int = 75,
@@ -182,14 +161,6 @@ fun EditAttendanceMobileScreen(
                     title = "Requirement",
                     pill = "target",
                     value = "${state.requirement}%",
-                    bgColor = Pink50,
-                    chipColor = Pink100,
-                    iconColor = Pink900,
-                    titleColor = Pink900,
-                    pillColor = Pink600,
-                    valueColor = Pink800,
-                    btnColor = Pink100,
-                    minusBtnTextColor = Pink900,
                     onMinus = {
                         state = state.copy(requirement = max(0, state.requirement - 5))
                     },
@@ -208,14 +179,6 @@ fun EditAttendanceMobileScreen(
                 title = "Classes conducted",
                 pill = "total",
                 value = "${state.conducted}",
-                bgColor = Blue50,
-                chipColor = Blue100,
-                iconColor = Blue900,
-                titleColor = Blue900,
-                pillColor = Blue400,
-                valueColor = Blue800,
-                btnColor = Blue100,
-                minusBtnTextColor = Blue900,
                 onMinus = {
                     val newC = max(0, state.conducted - 1)
                     state = state.copy(
@@ -237,14 +200,6 @@ fun EditAttendanceMobileScreen(
                 title = "Classes attended",
                 pill = "yours",
                 value = "${state.attended}",
-                bgColor = Teal50,
-                chipColor = Teal100,
-                iconColor = Teal900,
-                titleColor = Teal900,
-                pillColor = Teal400,
-                valueColor = Teal800,
-                btnColor = Teal100,
-                minusBtnTextColor = Teal900,
                 onMinus = {
                     state = state.copy(attended = max(0, state.attended - 1))
                 },
