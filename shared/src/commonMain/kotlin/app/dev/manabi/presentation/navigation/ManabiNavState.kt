@@ -37,7 +37,7 @@ class ManabiNavState internal constructor(
 
     fun navigateToMain(destination: Screen) {
         if (currentDestination == destination) return
-        backStack.removeLast()
+        backStack.removeAt(backStack.size - 1)
         backStack.add(destination)
     }
 
@@ -48,7 +48,7 @@ class ManabiNavState internal constructor(
 
     fun popBackStack(): Boolean {
         if (backStack.size <= 1) return false
-        backStack.removeLast()
+        backStack.removeAt(backStack.size - 1)
         return true
     }
 }

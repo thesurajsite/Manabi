@@ -21,7 +21,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -42,48 +41,26 @@ import app.dev.manabi.presentation.screens.attendance.components.AttendanceRingC
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceState
 import app.dev.manabi.presentation.screens.attendance.components.ClassesNeededCard
 import app.dev.manabi.presentation.screens.attendance.components.StepperSection
-import kotlin.math.ceil
 import kotlin.math.max
-import kotlin.math.roundToInt
 
 
 private val White = Color(0xFFFFFFFF)
 
-data class AttendanceState(
-    val requirement: Int = 75,
-    val conducted: Int = 26,
-    val attended: Int = 16
-) {
-    val percentage: Int
-        get() = if (conducted == 0) 0 else ((attended.toFloat() / conducted) * 100).roundToInt()
-
-    val classesNeeded: Int
-        get() {
-            if (percentage >= requirement) return 0
-            val r = requirement / 100f
-            return max(0, ceil((r * conducted - attended) / (1 - r)).toInt())
-        }
-
-    val isOnTrack: Boolean get() = percentage >= requirement
-}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAttendanceMobileScreen(
-    onBack: () -> Unit,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     var state by remember { mutableStateOf(AttendanceState()) }
-    var lastUpdated by remember { mutableStateOf("21-May 18:59") }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Edit Attendance") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = onNavigateUp) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -135,7 +112,7 @@ fun EditAttendanceMobileScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Attendance ring card
+                // Attendance percent card
                 AttendanceRingCard(
                     modifier = Modifier.weight(0.8f),
                     percentage = state.percentage,
@@ -155,7 +132,7 @@ fun EditAttendanceMobileScreen(
             Box(
                 modifier = Modifier.fillMaxWidth()
             ){
-                // Requirement section — pink
+                // Requirement section
                 StepperSection(
                     icon = Icons.Filled.TrackChanges,
                     title = "Requirement",
@@ -173,7 +150,7 @@ fun EditAttendanceMobileScreen(
 
             Spacer(Modifier.height(5.dp))
 
-            // Classes conducted — blue
+            // Classes conducted
             StepperSection(
                 icon = Icons.Filled.School,
                 title = "Classes conducted",
@@ -194,7 +171,7 @@ fun EditAttendanceMobileScreen(
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            // Classes attended — teal
+            // Classes attended
             StepperSection(
                 icon = Icons.Filled.CheckCircle,
                 title = "Classes attended",

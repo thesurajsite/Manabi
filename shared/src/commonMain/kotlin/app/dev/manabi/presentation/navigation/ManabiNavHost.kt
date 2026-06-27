@@ -37,7 +37,7 @@ fun ManabiNavHost(
         }
         entry(Screen.EditAttendance) {
             EditAttendanceMobileScreen(
-                onBack = { navState.popBackStack() }
+                onNavigateUp = { navState.popBackStack() }
             )
         }
     }

@@ -118,7 +118,7 @@ fun EditAttendanceDesktopPane(
             modifier = Modifier.fillMaxWidth(0.8f),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Attendance ring card
+            // Attendance percent card
             AttendanceRingCard(
                 modifier = Modifier.weight(0.8f),
                 percentage = state.percentage,
@@ -159,7 +159,7 @@ fun EditAttendanceDesktopPane(
         Row(
             modifier = Modifier.fillMaxWidth(0.8f)
         ){
-            // Classes conducted — blue
+            // Classes conducted
             StepperSection(
                 icon = Icons.Filled.School,
                 title = "Classes conducted",
@@ -180,7 +180,7 @@ fun EditAttendanceDesktopPane(
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            // Classes attended — teal
+            // Classes attended
             StepperSection(
                 icon = Icons.Filled.CheckCircle,
                 title = "Classes attended",
