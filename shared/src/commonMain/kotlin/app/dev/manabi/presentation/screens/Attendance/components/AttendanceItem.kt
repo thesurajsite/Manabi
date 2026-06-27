@@ -21,11 +21,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.dev.manabi.domain.model.Subject
+import app.dev.manabi.domain.model.Attendance
 
 @Composable
-fun SubjectItem(
-    subject: Subject,
+fun AttendanceItem(
+    subject: Attendance,
     onClick: () -> Unit,
 ) {
     val percentage = (subject.attended * 100) / subject.conducted
@@ -70,7 +70,7 @@ fun SubjectItem(
 
             // Teacher Name
             Text(
-                text = "Richi Prasad",
+                text = subject.teacher,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,

@@ -1,4 +1,4 @@
-package app.dev.manabi.presentation.utils
+package app.dev.manabi.presentation.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

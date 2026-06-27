@@ -4,16 +4,11 @@ CREATE TABLE Subject (
     conducted INTEGER NOT NULL,
     attended INTEGER NOT NULL,
     requirement INTEGER NOT NULL,
+    days TEXT NOT NULL,
+    teacher TEXT NOT NULL,
     createdAt TEXT NOT NULL,
     updatedAt TEXT NOT NULL
 );
-
-getAllSubjects:
-SELECT * FROM Subject;
-
-getSubjectById:
-SELECT * FROM Subject
-WHERE id = ?;
 
 insertSubject:
 INSERT INTO Subject(
@@ -22,21 +17,12 @@ INSERT INTO Subject(
     conducted,
     attended,
     requirement,
+    days,
+    teacher,
     createdAt,
     updatedAt
 )
-VALUES (?, ?, ?, ?, ?, ?, ?);
-
-updateSubject:
-UPDATE Subject
-SET
-    subjectName = ?,
-    conducted = ?,
-    attended = ?,
-    requirement = ?,
-    createdAt = ?,
-    updatedAt = ?
-WHERE id = ?;
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 deleteSubject:
 DELETE FROM Subject

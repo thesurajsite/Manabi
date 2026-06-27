@@ -18,21 +18,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.dev.manabi.domain.model.Subject
-import app.dev.manabi.presentation.utils.SearchBar
+import app.dev.manabi.domain.model.Attendance
+import app.dev.manabi.presentation.components.SearchBar
 
 
 val sampleSubjects = listOf(
-    Subject(1L, "Mathematics", 40, 36, 75, "2026-05-27", "2026-05-27", listOf("Monday", "Wednesday", "Friday")),
-    Subject(2L, "Physics", 32, 28, 75, "2026-05-27", "2026-05-27", listOf("Tuesday", "Thursday")),
-    Subject(3L, "Chemistry", 30, 25, 75, "2026-05-27", "2026-05-27", listOf("Monday", "Thursday")),
-    Subject(4L, "Computer Networks", 45, 41, 80, "2026-05-27", "2026-05-27", listOf("Tuesday", "Friday")),
-    Subject(5L, "Operating Systems", 38, 30, 75, "2026-05-27", "2026-05-27", listOf("Wednesday", "Saturday")),
-    Subject(1L, "Mathematics", 40, 36, 75, "2026-05-27", "2026-05-27", listOf("Monday", "Wednesday", "Friday")),
-    Subject(2L, "Physics", 32, 28, 75, "2026-05-27", "2026-05-27", listOf("Tuesday", "Thursday")),
-    Subject(3L, "Chemistry", 30, 25, 75, "2026-05-27", "2026-05-27", listOf("Monday", "Thursday")),
-    Subject(4L, "Computer Networks", 45, 41, 80, "2026-05-27", "2026-05-27", listOf("Tuesday", "Friday")),
-    Subject(5L, "Operating Systems", 38, 30, 75, "2026-05-27", "2026-05-27", listOf("Wednesday", "Saturday"))
+    Attendance(1L, "Mathematics", 40, 36, 75, listOf("Monday", "Wednesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(2L, "Physics", 32, 28, 75, listOf("Tuesday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(3L, "Chemistry", 30, 25, 75, listOf("Monday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(4L, "Computer Networks", 45, 41, 80, listOf("Tuesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(5L, "Operating Systems", 38, 30, 75, listOf("Wednesday", "Saturday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(1L, "Mathematics", 40, 36, 75, listOf("Monday", "Wednesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(2L, "Physics", 32, 28, 75, listOf("Tuesday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(3L, "Chemistry", 30, 25, 75, listOf("Monday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(4L, "Computer Networks", 45, 41, 80, listOf("Tuesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
+    Attendance(5L, "Operating Systems", 38, 30, 75, listOf("Wednesday", "Saturday"), "Richi Prasad", "2026-05-27", "2026-05-27")
 )
 
 val filterTabs = listOf("All", "On Track", "At Risk", "Can Miss", "Must Go")
@@ -132,7 +132,7 @@ fun AttendanceListPane(
                 .padding(horizontal = 12.dp)
         ) {
             sampleSubjects.forEach { subject ->
-                SubjectItem(
+                AttendanceItem(
                     subject = subject,
                     onClick = onSubjectClick
                 )
