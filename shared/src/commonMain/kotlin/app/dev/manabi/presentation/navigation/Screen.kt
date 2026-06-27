@@ -1,10 +1,9 @@
 package app.dev.manabi.presentation.navigation
 
 import kotlinx.serialization.Serializable
-import androidx.navigation3.runtime.NavKey
 
 @Serializable
-sealed class Screen : NavKey {
+sealed class Screen {
 
     @Serializable
     data object MainGraph {

@@ -2,9 +2,8 @@ package app.dev.manabi.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.ui.NavDisplay
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import app.dev.manabi.presentation.screens.MainScreen
 import app.dev.manabi.presentation.screens.attendance.EditAttendanceMobileScreen
 
@@ -13,39 +12,36 @@ fun ManabiNavHost(
     navState: ManabiNavState,
     modifier: Modifier = Modifier,
 ) {
-    val entryProvider = entryProvider<NavKey> {
-        entry(Screen.MainGraph.Attendance) {
+    NavHost(
+        navController = navState.navController,
+        startDestination = Screen.MainGraph.Attendance,
+        modifier = modifier
+    ) {
+        composable<Screen.MainGraph.Attendance> {
             MainScreen(
                 currentScreen = Screen.MainGraph.Attendance,
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
             )
         }
-        entry(Screen.MainGraph.Productivity) {
+        composable<Screen.MainGraph.Productivity> {
             MainScreen(
                 currentScreen = Screen.MainGraph.Productivity,
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
             )
         }
-        entry(Screen.MainGraph.Schedule) {
+        composable<Screen.MainGraph.Schedule> {
             MainScreen(
                 currentScreen = Screen.MainGraph.Schedule,
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
             )
         }
-        entry(Screen.EditAttendance) {
+        composable<Screen.EditAttendance> {
             EditAttendanceMobileScreen(
-                onNavigateUp = { navState.popBackStack() }
+                onNavigateUp = { navState.navigateUp() }
             )
         }
     }
-
-    NavDisplay(
-        backStack = navState.backStack,
-        modifier = modifier,
-        onBack = { navState.popBackStack() },
-        entryProvider = entryProvider
-    )
 }

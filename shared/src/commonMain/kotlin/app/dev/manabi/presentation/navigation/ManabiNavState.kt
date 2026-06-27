@@ -2,53 +2,41 @@ package app.dev.manabi.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.savedstate.serialization.SavedStateConfiguration
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun rememberManabiNavState(): ManabiNavState {
-    val module = SerializersModule {
-        polymorphic(NavKey::class) {
-            subclass(Screen.MainGraph.Attendance::class, Screen.MainGraph.Attendance.serializer())
-            subclass(Screen.MainGraph.Productivity::class, Screen.MainGraph.Productivity.serializer())
-            subclass(Screen.MainGraph.Schedule::class, Screen.MainGraph.Schedule.serializer())
-            subclass(Screen.EditAttendance::class, Screen.EditAttendance.serializer())
-        }
-    }
-    val configuration = SavedStateConfiguration {
-        serializersModule = module
-    }
-    val backStack = rememberNavBackStack(
-        configuration = configuration,
-        Screen.MainGraph.Attendance,
-    )
-    return remember(backStack) { ManabiNavState(backStack) }
+fun rememberManabiNavState(
+    navController: NavHostController = rememberNavController()
+): ManabiNavState = remember(navController) {
+    ManabiNavState(navController)
 }
 
-class ManabiNavState internal constructor(
-    val backStack: NavBackStack<NavKey>,
+class ManabiNavState(
+    val navController: NavHostController,
 ) {
-    val currentDestination: Screen
-        get() = backStack.last() as Screen
-
     fun navigateToMain(destination: Screen) {
-        if (currentDestination == destination) return
-        backStack.removeAt(backStack.size - 1)
-        backStack.add(destination)
+        navController.navigate(destination) {
+            // Pop up to the start destination of the graph to
+            // avoid building up a large stack of destinations
+            // on the back stack as users select items
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            // Avoid multiple copies of the same destination when
+            // reselecting the same item
+            launchSingleTop = true
+            // Restore state when reselecting a previously selected item
+            restoreState = true
+        }
     }
 
     fun navigateToEditAttendance() {
-        if (currentDestination == Screen.EditAttendance) return
-        backStack.add(Screen.EditAttendance)
+        navController.navigate(Screen.EditAttendance)
     }
 
-    fun popBackStack(): Boolean {
-        if (backStack.size <= 1) return false
-        backStack.removeAt(backStack.size - 1)
-        return true
+    fun navigateUp() {
+        navController.navigateUp()
     }
 }
