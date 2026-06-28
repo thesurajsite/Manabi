@@ -132,12 +132,12 @@ fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
             if (attendanceList.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(top = 32.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = "No attendance records found",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             } else {

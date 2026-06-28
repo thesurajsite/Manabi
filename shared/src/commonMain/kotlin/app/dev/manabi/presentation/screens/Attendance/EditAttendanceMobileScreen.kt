@@ -135,6 +135,7 @@ fun EditAttendanceMobileScreen(
                 ClassesNeededCard(
                     modifier = Modifier.weight(0.8f),
                     needed = uiState.classesNeeded,
+                    canSkip = uiState.canSkip,
                     requirement = uiState.requirement,
                     isOnTrack = uiState.isOnTrack
                 )

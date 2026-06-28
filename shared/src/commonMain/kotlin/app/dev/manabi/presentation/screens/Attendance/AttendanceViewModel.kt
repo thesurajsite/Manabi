@@ -149,5 +149,12 @@ data class AttendanceUiState(
             return if (r >= 1f) 0 else max(0, ceil((r * conducted - attended) / (1 - r)).toInt())
         }
 
+    val canSkip: Int
+        get() {
+            if (percentage < requirement || requirement <= 0) return 0
+            val r = requirement / 100f
+            return max(0, ((attended.toFloat() / r) - conducted).toInt())
+        }
+
     val isOnTrack: Boolean get() = percentage >= requirement
 }

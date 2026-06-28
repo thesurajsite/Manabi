@@ -31,16 +31,17 @@ import app.dev.manabi.presentation.screens.attendance.AttendanceViewModel
 import app.dev.manabi.presentation.theme.primary
 import org.koin.compose.viewmodel.koinViewModel
 
-private val Teal400    = Color(0xFF1D9E75)
-private val Danger     = Color(0xFFFF6B6B)
-private val White      = Color(0xFFFFFFFF)
+private val Teal400 = Color(0xFF1D9E75)
+private val Danger = Color(0xFFFF6B6B)
+private val White = Color(0xFFFFFFFF)
 
+@Suppress("ktlint:standard:function-naming")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAttendanceDesktopPane(
     attendance: Attendance?,
     isMobile: Boolean,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
 ) {
     val viewModel: AttendanceViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -57,7 +58,7 @@ fun EditAttendanceDesktopPane(
                         showDeleteConfirmation = false
                         viewModel.deleteAttendance(uiState.id, onBack)
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red),
                 ) {
                     Text("Delete")
                 }
@@ -66,40 +67,43 @@ fun EditAttendanceDesktopPane(
                 TextButton(onClick = { showDeleteConfirmation = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Top bar (Update Subject)
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 20.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
         ) {
             Text(
                 text = if (attendance == null) "Add Subject" else "Update Subject",
                 modifier = Modifier.align(Alignment.Center),
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp
-                )
+                style =
+                    MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 24.sp,
+                    ),
             )
 
             // Close Subject Details Pane
             IconButton(
                 onClick = { viewModel.closeSubject() },
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier.align(Alignment.CenterEnd),
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Close"
+                    contentDescription = "Close",
                 )
             }
         }
@@ -109,25 +113,27 @@ fun EditAttendanceDesktopPane(
             value = uiState.subjectName,
             onValueChange = { viewModel.updateSubjectName(it) },
             placeholder = { Text("Subject Name") },
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .border(
-                    width = 2.dp,
-                    color = color,
-                    shape = RoundedCornerShape(14.dp)
-                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.8f)
+                    .border(
+                        width = 2.dp,
+                        color = color,
+                        shape = RoundedCornerShape(14.dp),
+                    ),
             shape = RoundedCornerShape(14.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                disabledBorderColor = Color.Transparent,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Color.White,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                disabledTextColor = Color.Black
-            )
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    disabledBorderColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Black,
+                ),
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -135,28 +141,29 @@ fun EditAttendanceDesktopPane(
         // Status cards row
         Row(
             modifier = Modifier.fillMaxWidth(0.8f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Attendance percent card
             AttendanceRingCard(
                 modifier = Modifier.weight(0.8f),
                 percentage = uiState.percentage,
-                isOnTrack = uiState.isOnTrack
+                isOnTrack = uiState.isOnTrack,
             )
             // Classes needed card
             ClassesNeededCard(
                 modifier = Modifier.weight(0.8f),
                 needed = uiState.classesNeeded,
+                canSkip = uiState.canSkip,
                 requirement = uiState.requirement,
-                isOnTrack = uiState.isOnTrack
+                isOnTrack = uiState.isOnTrack,
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Box(
-            modifier = Modifier.fillMaxWidth(0.8f)
-        ){
+            modifier = Modifier.fillMaxWidth(0.8f),
+        ) {
             // Requirement section
             StepperSection(
                 icon = Icons.Filled.TrackChanges,
@@ -169,15 +176,15 @@ fun EditAttendanceDesktopPane(
                 onPlus = {
                     viewModel.updateRequirement(uiState.requirement + 5)
                 },
-                modifier = Modifier
+                modifier = Modifier,
             )
         }
 
         Spacer(Modifier.height(10.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f)
-        ){
+            modifier = Modifier.fillMaxWidth(0.8f),
+        ) {
             // Classes conducted
             StepperSection(
                 icon = Icons.Filled.School,
@@ -190,7 +197,7 @@ fun EditAttendanceDesktopPane(
                 onPlus = {
                     viewModel.updateConducted(uiState.conducted + 1)
                 },
-                modifier = Modifier.weight(0.8f)
+                modifier = Modifier.weight(0.8f),
             )
 
             Spacer(modifier = Modifier.width(10.dp))
@@ -207,7 +214,7 @@ fun EditAttendanceDesktopPane(
                 onPlus = {
                     viewModel.updateAttended(uiState.attended + 1)
                 },
-                modifier = Modifier.weight(0.8f)
+                modifier = Modifier.weight(0.8f),
             )
         }
 
@@ -216,12 +223,13 @@ fun EditAttendanceDesktopPane(
         Row(
             modifier = Modifier.fillMaxWidth(0.8f),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             Button(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .height(52.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
                 onClick = {
@@ -233,7 +241,7 @@ fun EditAttendanceDesktopPane(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = White,
-                    letterSpacing = 0.3.sp
+                    letterSpacing = 0.3.sp,
                 )
             }
 
@@ -241,15 +249,16 @@ fun EditAttendanceDesktopPane(
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(
                     onClick = { showDeleteConfirmation = true },
-                    modifier = Modifier
-                        .size(52.dp)
-                        .background(Color.White, RoundedCornerShape(14.dp))
-                        .border(1.dp, Color.Red, RoundedCornerShape(14.dp))
+                    modifier =
+                        Modifier
+                            .size(52.dp)
+                            .background(Color.White, RoundedCornerShape(14.dp))
+                            .border(1.dp, Color.Red, RoundedCornerShape(14.dp)),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete",
-                        tint = Color.Red
+                        tint = Color.Red,
                     )
                 }
             }
@@ -257,27 +266,25 @@ fun EditAttendanceDesktopPane(
     }
 }
 
-
 @Composable
 fun AttendanceRingCard(
     modifier: Modifier = Modifier,
     percentage: Int,
-    isOnTrack: Boolean
+    isOnTrack: Boolean,
 ) {
     Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
-            .border(
-                width = 2.dp,
-                color =  Color(0xFF6D28D9),
-                shape = RoundedCornerShape(18.dp)
-            )
-            .background(White)
-            .padding(16.dp),
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(18.dp))
+                .border(
+                    width = 2.dp,
+                    color = Color(0xFF6D28D9),
+                    shape = RoundedCornerShape(18.dp),
+                ).background(White)
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-
         // Circular Progress Bar
         CircularProgressBar(
             percent = percentage,
@@ -294,64 +301,64 @@ fun AttendanceRingCard(
             fontSize = 9.sp,
             color = Color.Black,
             letterSpacing = 0.5.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
     }
 }
 
-
-
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ClassesNeededCard(
     modifier: Modifier = Modifier,
     needed: Int,
+    canSkip: Int,
     requirement: Int,
-    isOnTrack: Boolean
+    isOnTrack: Boolean,
 ) {
     val badgeColor by animateColorAsState(
         targetValue = if (isOnTrack) Teal400 else Danger,
         animationSpec = tween(400),
-        label = "badgeColor"
+        label = "badgeColor",
     )
 
     Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
-            .border(
-                width = 2.dp,
-                color =  Color(0xFF6D28D9),
-                shape = RoundedCornerShape(18.dp)
-            )
-            .background(White)
-            .padding(16.dp),
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(18.dp))
+                .border(
+                    width = 2.dp,
+                    color = Color(0xFF6D28D9),
+                    shape = RoundedCornerShape(18.dp),
+                ).background(White)
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(68.dp)
-                .clip(CircleShape)
-                .background(badgeColor)
+            modifier =
+                Modifier
+                    .size(68.dp)
+                    .clip(CircleShape)
+                    .background(badgeColor),
         ) {
             Text(
-                text = "$needed",
+                text = if (isOnTrack) "$canSkip" else "$needed",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Medium,
-                color = White
+                color = White,
             )
         }
 
         Text(
-            text = "CLASSES NEEDED",
+            text = if (isOnTrack) "CAN SKIP" else "CLASSES NEEDED",
             fontSize = 9.sp,
             color = Color.Black,
             letterSpacing = 0.5.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
     }
 }
-
 
 @Composable
 fun StepperSection(
@@ -364,29 +371,31 @@ fun StepperSection(
     modifier: Modifier,
 ) {
     Column(
-        modifier = modifier
-            .border(width = 2.dp, color = primary, shape = RoundedCornerShape(18.dp))
-            .clip(RoundedCornerShape(18.dp))
-            .background(primary)
-            .padding(14.dp)
+        modifier =
+            modifier
+                .border(width = 2.dp, color = primary, shape = RoundedCornerShape(18.dp))
+                .clip(RoundedCornerShape(18.dp))
+                .background(primary)
+                .padding(14.dp),
     ) {
         // Header row
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.wrapContentWidth()
+            modifier = Modifier.wrapContentWidth(),
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(30.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.White)
+                modifier =
+                    Modifier
+                        .size(30.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.White),
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = primary,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -396,22 +405,23 @@ fun StepperSection(
                 fontWeight = FontWeight.Medium,
                 color = Color.White,
                 letterSpacing = 0.4.sp,
-                maxLines = 2
+                maxLines = 2,
             )
             Spacer(modifier = Modifier.weight(1f))
 
             // Pill badge
             Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(Color.White)
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color.White)
+                        .padding(horizontal = 8.dp, vertical = 2.dp),
             ) {
                 Text(
                     text = "$pill",
                     fontSize = 11.sp,
                     color = primary,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
                 )
             }
         }
@@ -422,54 +432,57 @@ fun StepperSection(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.wrapContentWidth()
+            modifier = Modifier.wrapContentWidth(),
         ) {
             // Minus button
             IconButton(
                 onClick = onMinus,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White)
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White),
             ) {
                 Text(
                     text = "−",
                     fontSize = 22.sp,
                     color = primary,
-                    fontWeight = FontWeight.Normal
+                    fontWeight = FontWeight.Normal,
                 )
             }
 
             // Value display
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White)
-                    .padding(vertical = 10.dp)
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White)
+                        .padding(vertical = 10.dp),
             ) {
                 Text(
                     text = "$value",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = primary
+                    color = primary,
                 )
             }
 
             // Plus button
             IconButton(
                 onClick = onPlus,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White)
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White),
             ) {
                 Text(
                     text = "+",
                     fontSize = 22.sp,
                     color = primary,
-                    fontWeight = FontWeight.Normal
+                    fontWeight = FontWeight.Normal,
                 )
             }
         }
