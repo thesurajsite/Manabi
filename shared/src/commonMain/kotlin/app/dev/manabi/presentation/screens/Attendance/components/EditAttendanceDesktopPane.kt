@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.*
@@ -23,7 +24,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.dev.manabi.presentation.screens.attendance.AttendanceViewModel
 import app.dev.manabi.presentation.theme.primary
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -61,6 +64,7 @@ fun EditAttendanceDesktopPane(
 ) {
     var state by remember { mutableStateOf(AttendanceState()) }
     var lastUpdated by remember { mutableStateOf("21-May 18:59") }
+    val viewModel: AttendanceViewModel = koinViewModel()
 
     Column(
         modifier = Modifier
@@ -70,20 +74,30 @@ fun EditAttendanceDesktopPane(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Top bar (Update Subject)
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 20.dp),
-            horizontalArrangement = Arrangement.Center
+                .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
-
             Text(
                 text = "Update Subject",
+                modifier = Modifier.align(Alignment.Center),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 24.sp
-                ),
+                )
             )
+
+            // Close Subject Details Pane
+            IconButton(
+                onClick = { viewModel.closeSubject() },
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close"
+                )
+            }
         }
 
         val color = Color(0xFF6D28D9)

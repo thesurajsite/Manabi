@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.components.SearchBar
+import app.dev.manabi.presentation.screens.attendance.AttendanceViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 val sampleSubjects = listOf(
@@ -43,6 +45,7 @@ fun AttendanceListPane(
     onSubjectClick: () -> Unit,
 ) {
     var selectedFilter by remember { mutableStateOf("All") }
+    val viewmodel: AttendanceViewModel = koinViewModel()
 
     Column(
         modifier = Modifier
@@ -134,7 +137,10 @@ fun AttendanceListPane(
             sampleSubjects.forEach { subject ->
                 AttendanceItem(
                     subject = subject,
-                    onClick = onSubjectClick
+                    onClick = {
+                        viewmodel.openSubject()
+                        onSubjectClick()
+                    }
                 )
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),

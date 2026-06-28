@@ -1,5 +1,6 @@
 package app.dev.manabi.presentation.screens.attendance
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,14 +11,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceListPane
 import app.dev.manabi.presentation.screens.attendance.components.EditAttendanceDesktopPane
+import app.dev.manabi.presentation.screens.attendance.components.NoSubjectDesktopPane
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AttendanceDesktopScreen(modifier: Modifier) {
+
+    val viewmodel: AttendanceViewModel = koinViewModel()
+    val showSubject by viewmodel.showSubject.collectAsStateWithLifecycle()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -46,9 +55,16 @@ fun AttendanceDesktopScreen(modifier: Modifier) {
                     .weight(0.65f)
                     .clip(RoundedCornerShape(15.dp))
             ){
-                EditAttendanceDesktopPane(
-                    isMobile = false
-                )
+
+                if(showSubject){
+                    EditAttendanceDesktopPane(
+                        isMobile = false
+                    )
+                }
+                else{
+                    NoSubjectDesktopPane()
+                }
+
             }
         }
     }

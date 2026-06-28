@@ -3,18 +3,23 @@ package app.dev.manabi
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import app.dev.manabi.di.appModule
+import app.dev.manabi.di.platformModule
 import app.dev.manabi.presentation.navigation.ManabiNavHost
 import app.dev.manabi.presentation.navigation.rememberManabiNavState
+import org.koin.compose.KoinApplication
 
 @Composable
-@Preview
 fun App() {
-    val navState = rememberManabiNavState()
+    KoinApplication(application = {
+        modules(appModule, platformModule)
+    }) {
+        val navState = rememberManabiNavState()
 
-    MaterialTheme {
-        ManabiNavHost(
-            navState = navState
-        )
+        MaterialTheme {
+            ManabiNavHost(
+                navState = navState
+            )
+        }
     }
 }
