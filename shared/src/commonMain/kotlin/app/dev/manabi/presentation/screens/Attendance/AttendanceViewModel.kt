@@ -20,13 +20,28 @@ class AttendanceViewModel(
     private val getAttendanceUseCase: GetAttendanceUseCase,
     private val deleteAttendanceUseCase: DeleteAttendanceUseCase,
 ) : ViewModel() {
-    val attendanceList: StateFlow<List<Attendance>> = 
-        getAttendanceUseCase()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    val attendanceList: StateFlow<List<Attendance>> =
+        combine(getAttendanceUseCase(), _searchQuery) { list, query ->
+            if (query.isBlank()) {
+                list
+            } else {
+                list.filter {
+                    it.subjectName.contains(query, ignoreCase = true) ||
+                        it.teacher.contains(query, ignoreCase = true)
+                }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList(),
+        )
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
 
     private val _showSubject = MutableStateFlow(false)
     val showSubject = _showSubject.asStateFlow()
@@ -120,7 +135,10 @@ class AttendanceViewModel(
         }
     }
 
-    fun deleteAttendance(id: Long, onSuccess: () -> Unit) {
+    fun deleteAttendance(
+        id: Long,
+        onSuccess: () -> Unit,
+    ) {
         viewModelScope.launch {
             deleteAttendanceUseCase(id)
             closeSubject()

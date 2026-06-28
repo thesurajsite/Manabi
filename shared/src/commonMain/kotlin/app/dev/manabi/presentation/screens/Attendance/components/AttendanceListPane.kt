@@ -31,6 +31,7 @@ fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
     var selectedFilter by remember { mutableStateOf("All") }
     val viewmodel: AttendanceViewModel = koinViewModel()
     val attendanceList by viewmodel.attendanceList.collectAsStateWithLifecycle()
+    val searchQuery by viewmodel.searchQuery.collectAsStateWithLifecycle()
 
     Column(
         modifier =
@@ -78,7 +79,11 @@ fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
         }
 
         // Search Bar
-        SearchBar("Search")
+        SearchBar(
+            query = searchQuery,
+            onQueryChange = { viewmodel.updateSearchQuery(it) },
+            placeHolder = "Search",
+        )
 
         // Filter pills
         Row(
