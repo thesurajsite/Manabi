@@ -1,8 +1,10 @@
 package app.dev.manabi.di
 
+import androidx.room.RoomDatabase
 import app.dev.manabi.data.repositoryImpl.AttendanceRepositoryImpl
 import app.dev.manabi.data.source.local.SubjectLocalDataSource
 import app.dev.manabi.database.ManabiDatabase
+import app.dev.manabi.database.getRoomDatabase
 import app.dev.manabi.domain.repository.AttendanceRepository
 import app.dev.manabi.domain.usecase.AddAttendanceUseCase
 import app.dev.manabi.domain.usecase.DeleteAttendanceUseCase
@@ -17,9 +19,11 @@ import org.koin.dsl.module
 expect val platformModule: Module
 
 val appModule = module {
-    single { 
-        val database = ManabiDatabase(get())
-        database.subjectQueries
+    single {
+        getRoomDatabase(get<RoomDatabase.Builder<ManabiDatabase>>())
+    }
+    single {
+        get<ManabiDatabase>().attendanceDao()
     }
     singleOf(::SubjectLocalDataSource)
 

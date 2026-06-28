@@ -28,10 +28,10 @@ val filterTabs = listOf("All", "On Track", "At Risk", "Can Miss", "Must Go")
 
 @Composable
 fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
-    var selectedFilter by remember { mutableStateOf("All") }
     val viewmodel: AttendanceViewModel = koinViewModel()
     val attendanceList by viewmodel.attendanceList.collectAsStateWithLifecycle()
     val searchQuery by viewmodel.searchQuery.collectAsStateWithLifecycle()
+    val selectedFilter by viewmodel.selectedFilter.collectAsStateWithLifecycle()
 
     Column(
         modifier =
@@ -97,7 +97,7 @@ fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
                 val isActive = selectedFilter == label
                 FilterChip(
                     selected = isActive,
-                    onClick = { selectedFilter = label },
+                    onClick = { viewmodel.updateFilter(label) },
                     label = {
                         Text(
                             text = label,
