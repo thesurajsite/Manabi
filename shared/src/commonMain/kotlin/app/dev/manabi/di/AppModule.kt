@@ -5,6 +5,7 @@ import app.dev.manabi.data.source.local.SubjectLocalDataSource
 import app.dev.manabi.database.ManabiDatabase
 import app.dev.manabi.domain.repository.AttendanceRepository
 import app.dev.manabi.domain.usecase.AddAttendanceUseCase
+import app.dev.manabi.domain.usecase.GetAttendanceUseCase
 import app.dev.manabi.presentation.screens.attendance.AttendanceViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -26,6 +27,7 @@ val appModule = module {
 
     // UseCases
     singleOf(::AddAttendanceUseCase)
+    singleOf(::GetAttendanceUseCase)
 
     // ViewModels
     viewModelOf(::AttendanceViewModel)

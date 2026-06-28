@@ -23,24 +23,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.dev.manabi.domain.model.Attendance
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun AttendanceItem(
     subject: Attendance,
     onClick: () -> Unit,
 ) {
     val percentage = (subject.attended * 100) / subject.conducted
-    val pctColor = when {
-        percentage >= 75 -> Color(0xFF22C55E)
-        percentage >= 60 -> Color(0xFFF59E0B)
-        else      -> Color(0xFFEF4444)
-    }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 10.dp, horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(vertical = 10.dp, horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // Circular Progress Bar
         CircularProgressBar(
@@ -59,12 +56,13 @@ fun AttendanceItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = subject.subjectName,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 15.sp
-                ),
+                style =
+                    MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp,
+                    ),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(2.dp))
 
@@ -75,7 +73,7 @@ fun AttendanceItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
 
@@ -87,11 +85,12 @@ fun AttendanceItem(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 StatLabel(label = "C:", value = subject.conducted.toString())
                 Box(
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .width(1.dp)
-                        .height(14.dp)
-                        .background(MaterialTheme.colorScheme.outlineVariant)
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 6.dp)
+                            .width(1.dp)
+                            .height(14.dp)
+                            .background(MaterialTheme.colorScheme.outlineVariant),
                 )
                 StatLabel(label = "A:", value = subject.attended.toString())
             }
@@ -116,19 +115,23 @@ fun AttendanceItem(
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
-fun StatLabel(label: String, value: String) {
+fun StatLabel(
+    label: String,
+    value: String,
+) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
         Text(
             text = label,
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
             text = value,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
         )
     }
 }

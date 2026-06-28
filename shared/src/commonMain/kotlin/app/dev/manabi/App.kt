@@ -8,17 +8,20 @@ import app.dev.manabi.di.platformModule
 import app.dev.manabi.presentation.navigation.ManabiNavHost
 import app.dev.manabi.presentation.navigation.rememberManabiNavState
 import org.koin.compose.KoinApplication
+import org.koin.dsl.KoinAppDeclaration
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
-fun App() {
+fun App(koinConfiguration: KoinAppDeclaration = {}) {
     KoinApplication(application = {
+        koinConfiguration()
         modules(appModule, platformModule)
     }) {
         val navState = rememberManabiNavState()
 
         MaterialTheme {
             ManabiNavHost(
-                navState = navState
+                navState = navState,
             )
         }
     }

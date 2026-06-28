@@ -1,6 +1,5 @@
 package app.dev.manabi.presentation.screens.attendance
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +25,7 @@ fun AttendanceDesktopScreen(modifier: Modifier) {
 
     val viewmodel: AttendanceViewModel = koinViewModel()
     val showSubject by viewmodel.showSubject.collectAsStateWithLifecycle()
+    val selectedAttendance by viewmodel.selectedAttendance.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -41,8 +41,8 @@ fun AttendanceDesktopScreen(modifier: Modifier) {
                     .clip(RoundedCornerShape(15.dp))
             ){
                 AttendanceListPane(
-                    onSubjectClick = {
-
+                    onSubjectClick = { attendance ->
+                        viewmodel.openSubject(attendance)
                     }
                 )
             }
@@ -58,6 +58,7 @@ fun AttendanceDesktopScreen(modifier: Modifier) {
 
                 if(showSubject){
                     EditAttendanceDesktopPane(
+                        attendance = selectedAttendance,
                         isMobile = false
                     )
                 }

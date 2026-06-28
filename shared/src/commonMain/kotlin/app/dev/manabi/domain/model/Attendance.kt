@@ -12,5 +12,5 @@ data class Attendance(
     val days: List<String>,
     val teacher: String,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )

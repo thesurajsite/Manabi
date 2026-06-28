@@ -1,64 +1,49 @@
 package app.dev.manabi.presentation.screens.attendance
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TrackChanges
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceRingCard
-import app.dev.manabi.presentation.screens.attendance.components.AttendanceState
 import app.dev.manabi.presentation.screens.attendance.components.ClassesNeededCard
 import app.dev.manabi.presentation.screens.attendance.components.StepperSection
-import kotlin.math.max
-
+import org.koin.compose.viewmodel.koinViewModel
 
 private val White = Color(0xFFFFFFFF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAttendanceMobileScreen(
+    attendance: Attendance?,
     onNavigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AttendanceViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var state by remember { mutableStateOf(AttendanceState()) }
+    // Initialize the ViewModel state if it's the first time or if the attendance object changed
+    LaunchedEffect(attendance) {
+        viewModel.openSubject(attendance)
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Edit Attendance") },
+                title = { Text(if (attendance == null) "Add Attendance" else "Edit Attendance") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(
@@ -82,8 +67,9 @@ fun EditAttendanceMobileScreen(
 
             val color = Color(0xFF6D28D9)
             OutlinedTextField(
-                value = "Rock mechanics",
-                onValueChange = {},
+                value = uiState.subjectName,
+                onValueChange = { viewModel.updateSubjectName(it) },
+                placeholder = { Text("Subject Name") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
@@ -115,15 +101,15 @@ fun EditAttendanceMobileScreen(
                 // Attendance percent card
                 AttendanceRingCard(
                     modifier = Modifier.weight(0.8f),
-                    percentage = state.percentage,
-                    isOnTrack = state.isOnTrack
+                    percentage = uiState.percentage,
+                    isOnTrack = uiState.isOnTrack
                 )
                 // Classes needed card
                 ClassesNeededCard(
                     modifier = Modifier.weight(0.8f),
-                    needed = state.classesNeeded,
-                    requirement = state.requirement,
-                    isOnTrack = state.isOnTrack
+                    needed = uiState.classesNeeded,
+                    requirement = uiState.requirement,
+                    isOnTrack = uiState.isOnTrack
                 )
             }
 
@@ -137,12 +123,12 @@ fun EditAttendanceMobileScreen(
                     icon = Icons.Filled.TrackChanges,
                     title = "Requirement",
                     pill = "target",
-                    value = "${state.requirement}%",
+                    value = "${uiState.requirement}%",
                     onMinus = {
-                        state = state.copy(requirement = max(0, state.requirement - 5))
+                        viewModel.updateRequirement(uiState.requirement - 5)
                     },
                     onPlus = {
-                        state = state.copy(requirement = minOf(100, state.requirement + 5))
+                        viewModel.updateRequirement(uiState.requirement + 5)
                     },
                     modifier = Modifier
                 )
@@ -155,16 +141,12 @@ fun EditAttendanceMobileScreen(
                 icon = Icons.Filled.School,
                 title = "Classes conducted",
                 pill = "total",
-                value = "${state.conducted}",
+                value = "${uiState.conducted}",
                 onMinus = {
-                    val newC = max(0, state.conducted - 1)
-                    state = state.copy(
-                        conducted = newC,
-                        attended = minOf(state.attended, newC)
-                    )
+                    viewModel.updateConducted(uiState.conducted - 1)
                 },
                 onPlus = {
-                    state = state.copy(conducted = state.conducted + 1)
+                    viewModel.updateConducted(uiState.conducted + 1)
                 },
                 modifier = Modifier
             )
@@ -176,14 +158,12 @@ fun EditAttendanceMobileScreen(
                 icon = Icons.Filled.CheckCircle,
                 title = "Classes attended",
                 pill = "yours",
-                value = "${state.attended}",
+                value = "${uiState.attended}",
                 onMinus = {
-                    state = state.copy(attended = max(0, state.attended - 1))
+                    viewModel.updateAttended(uiState.attended - 1)
                 },
                 onPlus = {
-                    state = state.copy(
-                        attended = minOf(state.conducted, state.attended + 1)
-                    )
+                    viewModel.updateAttended(uiState.attended + 1)
                 },
                 modifier = Modifier
             )
@@ -196,10 +176,12 @@ fun EditAttendanceMobileScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
-                onClick = { },
+                onClick = { 
+                    viewModel.saveAttendance(onSuccess = onNavigateUp)
+                },
             ) {
                 Text(
-                    text = "Save changes",
+                    text = if (attendance == null) "Add Attendance" else "Save changes",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = White,

@@ -2,6 +2,7 @@ package app.dev.manabi.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.Productivity.ProductivityScreen
 import app.dev.manabi.presentation.screens.Schedule.ScheduleScreen
 import app.dev.manabi.presentation.screens.attendance.AttendanceScreen
@@ -10,7 +11,7 @@ import app.dev.manabi.presentation.screens.attendance.AttendanceScreen
 fun TopLevelNavHost(
     currentScreen: Screen,
     isMobile: Boolean,
-    onNavigateToEditAttendance: () -> Unit,
+    onNavigateToEditAttendance: (Attendance?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (currentScreen) {
@@ -31,5 +32,6 @@ fun TopLevelNavHost(
         )
 
         Screen.EditAttendance -> Unit
+        else -> {}
     }
 }

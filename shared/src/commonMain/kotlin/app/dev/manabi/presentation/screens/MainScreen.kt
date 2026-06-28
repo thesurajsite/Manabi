@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.navigation.Screen
 import app.dev.manabi.presentation.navigation.TopLevelNavHost
 import app.dev.manabi.presentation.navigation.components.BottomBar
@@ -19,7 +20,7 @@ import app.dev.manabi.presentation.navigation.components.NavigationRailBar
 fun MainScreen(
     currentScreen: Screen,
     onNavigateToMain: (Screen) -> Unit,
-    onNavigateToEditAttendance: () -> Unit
+    onNavigateToEditAttendance: (Attendance?) -> Unit
 ) {
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {

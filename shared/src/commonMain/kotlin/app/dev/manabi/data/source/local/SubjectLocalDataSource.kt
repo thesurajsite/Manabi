@@ -1,10 +1,18 @@
 package app.dev.manabi.data.source.local
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import app.dev.manabi.database.SubjectQueries
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 
 class SubjectLocalDataSource(
     private val queries: SubjectQueries
 ) {
+    fun getSubjects(): Flow<List<app.dev.manabi.database.Subject>> =
+        queries.getAllSubjects().asFlow().mapToList(Dispatchers.IO)
+
     fun insertSubject(
         id: Long,
         subjectName: String,

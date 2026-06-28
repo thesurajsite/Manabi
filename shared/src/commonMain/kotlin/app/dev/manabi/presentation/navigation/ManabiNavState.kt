@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import app.dev.manabi.domain.model.Attendance
 
 @Composable
 fun rememberManabiNavState(
@@ -32,8 +33,8 @@ class ManabiNavState(
         }
     }
 
-    fun navigateToEditAttendance() {
-        navController.navigate(Screen.EditAttendance)
+    fun navigateToEditAttendance(attendance: Attendance? = null) {
+        navController.navigate(Screen.EditAttendance(attendance))
     }
 
     fun navigateUp() {

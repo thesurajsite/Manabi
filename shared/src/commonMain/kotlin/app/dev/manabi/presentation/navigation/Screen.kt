@@ -1,5 +1,6 @@
 package app.dev.manabi.presentation.navigation
 
+import app.dev.manabi.domain.model.Attendance
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,5 +20,5 @@ sealed class Screen {
     }
 
     @Serializable
-    data object EditAttendance : Screen()
+    data class EditAttendance(val attendance: Attendance? = null) : Screen()
 }

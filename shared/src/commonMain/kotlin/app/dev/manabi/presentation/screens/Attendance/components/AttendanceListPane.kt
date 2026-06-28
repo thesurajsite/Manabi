@@ -18,69 +18,61 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.components.SearchBar
 import app.dev.manabi.presentation.screens.attendance.AttendanceViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-
-val sampleSubjects = listOf(
-    Attendance(1L, "Mathematics", 40, 36, 75, listOf("Monday", "Wednesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(2L, "Physics", 32, 28, 75, listOf("Tuesday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(3L, "Chemistry", 30, 25, 75, listOf("Monday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(4L, "Computer Networks", 45, 41, 80, listOf("Tuesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(5L, "Operating Systems", 38, 30, 75, listOf("Wednesday", "Saturday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(1L, "Mathematics", 40, 36, 75, listOf("Monday", "Wednesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(2L, "Physics", 32, 28, 75, listOf("Tuesday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(3L, "Chemistry", 30, 25, 75, listOf("Monday", "Thursday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(4L, "Computer Networks", 45, 41, 80, listOf("Tuesday", "Friday"), "Richi Prasad", "2026-05-27", "2026-05-27"),
-    Attendance(5L, "Operating Systems", 38, 30, 75, listOf("Wednesday", "Saturday"), "Richi Prasad", "2026-05-27", "2026-05-27")
-)
-
 val filterTabs = listOf("All", "On Track", "At Risk", "Can Miss", "Must Go")
 
-
 @Composable
-fun AttendanceListPane(
-    onSubjectClick: () -> Unit,
-) {
+fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
     var selectedFilter by remember { mutableStateOf("All") }
     val viewmodel: AttendanceViewModel = koinViewModel()
+    val attendanceList by viewmodel.attendanceList.collectAsStateWithLifecycle()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 20.dp, bottom = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 20.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = "Attendance",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp
-                ),
+                style =
+                    MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 24.sp,
+                    ),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
-            IconButton(onClick = {}) {
+            // Add Attendance
+            IconButton(onClick = {
+                viewmodel.openSubject(null)
+                onSubjectClick(null)
+            }) {
                 Icon(
                     imageVector = Icons.Filled.AddBox,
                     contentDescription = "New subject",
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
             IconButton(onClick = {}) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "More options",
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
         }
@@ -88,13 +80,13 @@ fun AttendanceListPane(
         // Search Bar
         SearchBar("Search")
 
-
         // Filter pills
         Row(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier =
+                Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             filterTabs.forEach { label ->
                 val isActive = selectedFilter == label
@@ -105,47 +97,63 @@ fun AttendanceListPane(
                         Text(
                             text = label,
                             fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal,
-                            fontSize = 13.sp
+                            fontSize = 13.sp,
                         )
                     },
                     shape = RoundedCornerShape(50),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF6C63FF),
-                        selectedLabelColor = Color.White,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = isActive,
-                        borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                        selectedBorderColor = Color.Transparent,
-                        borderWidth = 0.5.dp,
-                        selectedBorderWidth = 0.dp
-                    )
+                    colors =
+                        FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(0xFF6C63FF),
+                            selectedLabelColor = Color.White,
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
+                    border =
+                        FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isActive,
+                            borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                            selectedBorderColor = Color.Transparent,
+                            borderWidth = 0.5.dp,
+                            selectedBorderWidth = 0.dp,
+                        ),
                 )
             }
         }
 
         // Subject List
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 12.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 12.dp),
         ) {
-            sampleSubjects.forEach { subject ->
-                AttendanceItem(
-                    subject = subject,
-                    onClick = {
-                        viewmodel.openSubject()
-                        onSubjectClick()
-                    }
-                )
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                    thickness = 0.5.dp
-                )
+            if (attendanceList.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(top = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No attendance records found",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                attendanceList.forEach { subject ->
+                    AttendanceItem(
+                        subject = subject,
+                        onClick = {
+                            viewmodel.openSubject(subject)
+                            onSubjectClick(subject)
+                        },
+                    )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                        thickness = 0.5.dp,
+                    )
+                }
             }
         }
     }

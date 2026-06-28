@@ -10,8 +10,11 @@ CREATE TABLE Subject (
     updatedAt TEXT NOT NULL
 );
 
+getAllSubjects:
+SELECT * FROM Subject;
+
 insertSubject:
-INSERT INTO Subject(
+INSERT OR REPLACE INTO Subject(
     id,
     subjectName,
     conducted,

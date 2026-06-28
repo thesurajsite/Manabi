@@ -7,11 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceListPane
 
 @Composable
 fun AttendanceMobileScreen(
-    onNavigateToEditAttendance: () -> Unit,
+    onNavigateToEditAttendance: (Attendance?) -> Unit,
     modifier: Modifier,
 ) {
     Column(
@@ -21,8 +22,8 @@ fun AttendanceMobileScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         AttendanceListPane(
-            onSubjectClick = {
-                onNavigateToEditAttendance()
+            onSubjectClick = { attendance ->
+                onNavigateToEditAttendance(attendance)
             }
         )
     }

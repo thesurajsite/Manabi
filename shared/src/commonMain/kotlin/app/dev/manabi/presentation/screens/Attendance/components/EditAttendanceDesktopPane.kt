@@ -24,47 +24,25 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.attendance.AttendanceViewModel
 import app.dev.manabi.presentation.theme.primary
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.roundToInt
-
-
 
 private val Teal400    = Color(0xFF1D9E75)
 private val Danger     = Color(0xFFFF6B6B)
 private val White      = Color(0xFFFFFFFF)
 
-data class AttendanceState(
-    val requirement: Int = 75,
-    val conducted: Int = 26,
-    val attended: Int = 16
-) {
-    val percentage: Int
-        get() = if (conducted == 0) 0 else ((attended.toFloat() / conducted) * 100).roundToInt()
-
-    val classesNeeded: Int
-        get() {
-            if (percentage >= requirement) return 0
-            val r = requirement / 100f
-            return max(0, ceil((r * conducted - attended) / (1 - r)).toInt())
-        }
-
-    val isOnTrack: Boolean get() = percentage >= requirement
-}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAttendanceDesktopPane(
+    attendance: Attendance?,
     isMobile: Boolean,
     onBack: () -> Unit = {}
 ) {
-    var state by remember { mutableStateOf(AttendanceState()) }
-    var lastUpdated by remember { mutableStateOf("21-May 18:59") }
     val viewModel: AttendanceViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -80,7 +58,7 @@ fun EditAttendanceDesktopPane(
                 .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
             Text(
-                text = "Update Subject",
+                text = if (attendance == null) "Add Subject" else "Update Subject",
                 modifier = Modifier.align(Alignment.Center),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.SemiBold,
@@ -102,8 +80,9 @@ fun EditAttendanceDesktopPane(
 
         val color = Color(0xFF6D28D9)
         OutlinedTextField(
-            value = "Rock mechanics",
-            onValueChange = {},
+            value = uiState.subjectName,
+            onValueChange = { viewModel.updateSubjectName(it) },
+            placeholder = { Text("Subject Name") },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .border(
@@ -135,15 +114,15 @@ fun EditAttendanceDesktopPane(
             // Attendance percent card
             AttendanceRingCard(
                 modifier = Modifier.weight(0.8f),
-                percentage = state.percentage,
-                isOnTrack = state.isOnTrack
+                percentage = uiState.percentage,
+                isOnTrack = uiState.isOnTrack
             )
             // Classes needed card
             ClassesNeededCard(
                 modifier = Modifier.weight(0.8f),
-                needed = state.classesNeeded,
-                requirement = state.requirement,
-                isOnTrack = state.isOnTrack
+                needed = uiState.classesNeeded,
+                requirement = uiState.requirement,
+                isOnTrack = uiState.isOnTrack
             )
         }
 
@@ -157,12 +136,12 @@ fun EditAttendanceDesktopPane(
                 icon = Icons.Filled.TrackChanges,
                 title = "Requirement",
                 pill = "target",
-                value = "${state.requirement}%",
+                value = "${uiState.requirement}%",
                 onMinus = {
-                    state = state.copy(requirement = max(0, state.requirement - 5))
+                    viewModel.updateRequirement(uiState.requirement - 5)
                 },
                 onPlus = {
-                    state = state.copy(requirement = minOf(100, state.requirement + 5))
+                    viewModel.updateRequirement(uiState.requirement + 5)
                 },
                 modifier = Modifier
             )
@@ -178,16 +157,12 @@ fun EditAttendanceDesktopPane(
                 icon = Icons.Filled.School,
                 title = "Classes conducted",
                 pill = "total",
-                value = "${state.conducted}",
+                value = "${uiState.conducted}",
                 onMinus = {
-                    val newC = max(0, state.conducted - 1)
-                    state = state.copy(
-                        conducted = newC,
-                        attended = minOf(state.attended, newC)
-                    )
+                    viewModel.updateConducted(uiState.conducted - 1)
                 },
                 onPlus = {
-                    state = state.copy(conducted = state.conducted + 1)
+                    viewModel.updateConducted(uiState.conducted + 1)
                 },
                 modifier = Modifier.weight(0.8f)
             )
@@ -199,14 +174,12 @@ fun EditAttendanceDesktopPane(
                 icon = Icons.Filled.CheckCircle,
                 title = "Classes attended",
                 pill = "yours",
-                value = "${state.attended}",
+                value = "${uiState.attended}",
                 onMinus = {
-                    state = state.copy(attended = max(0, state.attended - 1))
+                    viewModel.updateAttended(uiState.attended - 1)
                 },
                 onPlus = {
-                    state = state.copy(
-                        attended = minOf(state.conducted, state.attended + 1)
-                    )
+                    viewModel.updateAttended(uiState.attended + 1)
                 },
                 modifier = Modifier.weight(0.8f)
             )
@@ -220,10 +193,12 @@ fun EditAttendanceDesktopPane(
                 .height(52.dp),
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
-            onClick = { },
+            onClick = { 
+                viewModel.saveAttendance(onSuccess = {})
+            },
         ) {
             Text(
-                text = "Save changes",
+                text = if (attendance == null) "Add Attendance" else "Save changes",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium,
                 color = White,
