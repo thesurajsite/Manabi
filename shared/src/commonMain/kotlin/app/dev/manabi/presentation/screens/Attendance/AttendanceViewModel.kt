@@ -23,9 +23,12 @@ class AttendanceViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
+    private val _selectedFilter = MutableStateFlow("All")
+    val selectedFilter = _selectedFilter.asStateFlow()
+
     val attendanceList: StateFlow<List<Attendance>> =
-        combine(getAttendanceUseCase(), _searchQuery) { list, query ->
-            if (query.isBlank()) {
+        combine(getAttendanceUseCase(), _searchQuery, _selectedFilter) { list, query, filter ->
+            var filteredList = if (query.isBlank()) {
                 list
             } else {
                 list.filter {
@@ -33,6 +36,16 @@ class AttendanceViewModel(
                         it.teacher.contains(query, ignoreCase = true)
                 }
             }
+
+            filteredList = when (filter) {
+                "On Track" -> filteredList.filter { it.isOnTrack }
+                "At Risk" -> filteredList.filter { !it.isOnTrack }
+                "Can Miss" -> filteredList.filter { it.canSkip > 0 }
+                "Must Go" -> filteredList.filter { it.classesNeeded > 0 }
+                else -> filteredList
+            }
+            
+            filteredList
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -41,6 +54,10 @@ class AttendanceViewModel(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun updateFilter(filter: String) {
+        _selectedFilter.value = filter
     }
 
     private val _showSubject = MutableStateFlow(false)
