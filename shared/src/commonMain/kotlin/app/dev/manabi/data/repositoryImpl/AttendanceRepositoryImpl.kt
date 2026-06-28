@@ -41,4 +41,8 @@ class AttendanceRepositoryImpl(
             updatedAt = attendance.updatedAt
         )
     }
+
+    override suspend fun deleteAttendance(id: Long) {
+        localDataSource.deleteSubject(id)
+    }
 }

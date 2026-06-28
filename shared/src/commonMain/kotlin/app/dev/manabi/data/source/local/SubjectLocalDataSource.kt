@@ -36,4 +36,8 @@ class SubjectLocalDataSource(
             updatedAt = updatedAt
         )
     }
+
+    fun deleteSubject(id: Long) {
+        queries.deleteSubject(id)
+    }
 }

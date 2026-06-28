@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface AttendanceRepository {
     fun getAllAttendance(): Flow<List<Attendance>>
     suspend fun addAttendance(attendance: Attendance)
+    suspend fun deleteAttendance(id: Long)
 }

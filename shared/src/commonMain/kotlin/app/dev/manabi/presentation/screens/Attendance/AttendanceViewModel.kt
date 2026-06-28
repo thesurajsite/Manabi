@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.domain.usecase.AddAttendanceUseCase
+import app.dev.manabi.domain.usecase.DeleteAttendanceUseCase
 import app.dev.manabi.domain.usecase.GetAttendanceUseCase
+import app.dev.manabi.showToast
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
@@ -16,6 +18,7 @@ import kotlin.time.Clock
 class AttendanceViewModel(
     private val addAttendanceUseCase: AddAttendanceUseCase,
     private val getAttendanceUseCase: GetAttendanceUseCase,
+    private val deleteAttendanceUseCase: DeleteAttendanceUseCase,
 ) : ViewModel() {
     val attendanceList: StateFlow<List<Attendance>> = 
         getAttendanceUseCase()
@@ -74,7 +77,7 @@ class AttendanceViewModel(
     }
 
     fun updateConducted(conducted: Int) {
-        val newConducted = max(0, conducted)
+        val newConducted = max(1, conducted)
         _uiState.update {
             it.copy(
                 conducted = newConducted,
@@ -92,6 +95,12 @@ class AttendanceViewModel(
     fun saveAttendance(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val state = _uiState.value
+
+            if (state.subjectName.isBlank()) {
+                showToast("Please enter a subject name")
+                return@launch
+            }
+
             val now = Clock.System.now().toString()
             val attendance =
                 Attendance(
@@ -106,6 +115,14 @@ class AttendanceViewModel(
                     updatedAt = now,
                 )
             addAttendanceUseCase(attendance)
+            closeSubject()
+            onSuccess()
+        }
+    }
+
+    fun deleteAttendance(id: Long, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            deleteAttendanceUseCase(id)
             closeSubject()
             onSuccess()
         }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.*
@@ -43,6 +44,31 @@ fun EditAttendanceDesktopPane(
 ) {
     val viewModel: AttendanceViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Subject") },
+            text = { Text("Are you sure you want to delete this subject?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        viewModel.deleteAttendance(uiState.id, onBack)
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -187,23 +213,46 @@ fun EditAttendanceDesktopPane(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .height(52.dp),
-            shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
-            onClick = { 
-                viewModel.saveAttendance(onSuccess = {})
-            },
+        Row(
+            modifier = Modifier.fillMaxWidth(0.8f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = if (attendance == null) "Add Attendance" else "Save changes",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = White,
-                letterSpacing = 0.3.sp
-            )
+            Button(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(52.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
+                onClick = {
+                    viewModel.saveAttendance(onSuccess = {})
+                },
+            ) {
+                Text(
+                    text = if (attendance == null) "Add Attendance" else "Save changes",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = White,
+                    letterSpacing = 0.3.sp
+                )
+            }
+
+            if (attendance != null) {
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = { showDeleteConfirmation = true },
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(Color.White, RoundedCornerShape(14.dp))
+                        .border(1.dp, Color.Red, RoundedCornerShape(14.dp))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Red
+                    )
+                }
+            }
         }
     }
 }
@@ -215,7 +264,6 @@ fun AttendanceRingCard(
     percentage: Int,
     isOnTrack: Boolean
 ) {
-
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(18.dp))
@@ -232,7 +280,7 @@ fun AttendanceRingCard(
 
         // Circular Progress Bar
         CircularProgressBar(
-            percent = 61,
+            percent = percentage,
             size = 68.dp,
             strokeWidth = 5.dp,
             color = Color(0xFF6C63FF),

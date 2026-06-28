@@ -1,11 +1,13 @@
 package app.dev.manabi.presentation.screens.attendance
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.*
@@ -34,10 +36,35 @@ fun EditAttendanceMobileScreen(
     viewModel: AttendanceViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     // Initialize the ViewModel state if it's the first time or if the attendance object changed
     LaunchedEffect(attendance) {
         viewModel.openSubject(attendance)
+    }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Subject") },
+            text = { Text("Are you sure you want to delete this subject?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        viewModel.deleteAttendance(uiState.id, onNavigateUp)
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -170,25 +197,47 @@ fun EditAttendanceMobileScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
-                onClick = { 
-                    viewModel.saveAttendance(onSuccess = onNavigateUp)
-                },
+            Row(
+                modifier = Modifier.fillMaxWidth(0.9f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = if (attendance == null) "Add Attendance" else "Save changes",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = White,
-                    letterSpacing = 0.3.sp
-                )
-            }
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(52.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
+                    onClick = {
+                        viewModel.saveAttendance(onSuccess = onNavigateUp)
+                    },
+                ) {
+                    Text(
+                        text = if (attendance == null) "Add Attendance" else "Save changes",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = White,
+                        letterSpacing = 0.3.sp
+                    )
+                }
 
+                if (attendance != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(
+                        onClick = { showDeleteConfirmation = true },
+                        modifier = Modifier
+                            .size(52.dp)
+                            .background(Color.White, RoundedCornerShape(14.dp))
+                            .border(1.dp, Color.Red, RoundedCornerShape(14.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = Color.Red
+                        )
+                    }
+                }
+            }
         }
     }
 }

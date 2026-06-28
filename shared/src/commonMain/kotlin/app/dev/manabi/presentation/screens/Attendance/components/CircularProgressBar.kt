@@ -127,7 +127,7 @@ private fun CircularProgressBarPreview() {
                 trackColor = colors.second,
                 textColor = colors.first,
                 label = lbl,
-                text = "65%"
+                text = "$pct%"
             )
         }
     }

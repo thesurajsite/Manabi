@@ -29,7 +29,7 @@ fun AttendanceItem(
     subject: Attendance,
     onClick: () -> Unit,
 ) {
-    val percentage = (subject.attended * 100) / subject.conducted
+    val percentage = if (subject.conducted > 0) (subject.attended * 100) / subject.conducted else 0
 
     Row(
         modifier =
@@ -41,7 +41,7 @@ fun AttendanceItem(
     ) {
         // Circular Progress Bar
         CircularProgressBar(
-            percent = 61,
+            percent = percentage,
             size = 60.dp,
             strokeWidth = 5.dp,
             color = Color(0xFF6C63FF),
