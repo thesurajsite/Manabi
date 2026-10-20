@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceListPane
 import app.dev.manabi.presentation.screens.attendance.components.EditAttendanceDesktopPane
 import app.dev.manabi.presentation.screens.attendance.components.NoSubjectDesktopPane
@@ -24,26 +25,38 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AttendanceDesktopScreen(modifier: Modifier) {
 
     val viewmodel: AttendanceViewModel = koinViewModel()
-    val showSubject by viewmodel.showSubject.collectAsStateWithLifecycle()
+    val isSubjectPaneOpen by viewmodel.isSubjectPaneOpen.collectAsStateWithLifecycle()
     val selectedAttendance by viewmodel.selectedAttendance.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Row{
+        Row {
             // Attendance List Pane
             Box(
                 modifier = Modifier
                     .weight(0.35f)
-                    .clip(RoundedCornerShape(15.dp))
-            ){
+                    .clip(RoundedCornerShape(15.dp)),
+            ) {
                 AttendanceListPane(
-                    onSubjectClick = { attendance ->
+                    onItemClick = { attendance ->
                         viewmodel.openSubject(attendance)
-                    }
+                    },
+                    onChevronClick = { attendance ->
+                        viewmodel.openSubject(attendance)
+                    },
+                    onPresentClick = { attendance ->
+                        viewmodel.markPresent(attendance.id)
+                    },
+                    onAbsentClick = { attendance ->
+                        viewmodel.markAbsent(attendance.id)
+                    },
+                    onAddClick = {
+                        viewmodel.openSubject(null)
+                    },
                 )
             }
 
@@ -53,19 +66,17 @@ fun AttendanceDesktopScreen(modifier: Modifier) {
             Box(
                 modifier = Modifier
                     .weight(0.65f)
-                    .clip(RoundedCornerShape(15.dp))
-            ){
-
-                if(showSubject){
+                    .clip(RoundedCornerShape(15.dp)),
+            ) {
+                val currentAttendance = selectedAttendance
+                if (isSubjectPaneOpen) {
                     EditAttendanceDesktopPane(
-                        attendance = selectedAttendance,
-                        isMobile = false
+                        attendance = currentAttendance,
+                        isMobile = false,
                     )
-                }
-                else{
+                } else {
                     NoSubjectDesktopPane()
                 }
-
             }
         }
     }

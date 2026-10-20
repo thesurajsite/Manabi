@@ -16,7 +16,7 @@ class SubjectLocalDataSource(
         conducted: Long,
         attended: Long,
         requirement: Long,
-        days: String,
+        days: Map<String, Int>,
         teacher: String,
         createdAt: String,
         updatedAt: String

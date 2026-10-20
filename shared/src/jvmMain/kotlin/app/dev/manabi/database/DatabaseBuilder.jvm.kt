@@ -10,4 +10,5 @@ fun getDatabaseBuilder(): RoomDatabase.Builder<ManabiDatabase> {
         name = dbFile.absolutePath,
         factory = { ManabiDatabaseConstructor.initialize() }
     )
+        .fallbackToDestructiveMigration(dropAllTables = true)
 }

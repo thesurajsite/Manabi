@@ -5,6 +5,12 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+enum class AttendanceStatus {
+    PRESENT,
+    ABSENT,
+    NOT_MARKED,
+}
+
 @Serializable
 data class Attendance(
     val id: Long,
@@ -12,11 +18,19 @@ data class Attendance(
     val conducted: Int,
     val attended: Int,
     val requirement: Int,
-    val days: List<String>,
+    val days: Map<String, Int>,
     val teacher: String,
     val createdAt: String,
     val updatedAt: String,
 ) {
+    /** Returns the recorded status for [date] (dd-MM-yyyy), or [AttendanceStatus.NOT_MARKED]. */
+    fun statusFor(date: String): AttendanceStatus =
+        when (days[date]) {
+            1 -> AttendanceStatus.PRESENT
+            0 -> AttendanceStatus.ABSENT
+            else -> AttendanceStatus.NOT_MARKED
+        }
+
     val percentage: Int
         get() = if (conducted == 0) 0 else ((attended.toFloat() / conducted) * 100).roundToInt()
 

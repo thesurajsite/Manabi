@@ -21,4 +21,7 @@ sealed class Screen {
 
     @Serializable
     data class EditAttendance(val attendance: Attendance? = null) : Screen()
+
+    @Serializable
+    data class SubjectDetails(val attendance: Attendance) : Screen()
 }

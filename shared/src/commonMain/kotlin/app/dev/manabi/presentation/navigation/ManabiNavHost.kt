@@ -12,6 +12,7 @@ import androidx.savedstate.write
 import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.MainScreen
 import app.dev.manabi.presentation.screens.attendance.EditAttendanceMobileScreen
+import app.dev.manabi.presentation.screens.attendance.SubjectDetailsMobileScreen
 import kotlinx.serialization.json.Json
 import kotlin.reflect.typeOf
 
@@ -42,13 +43,14 @@ fun ManabiNavHost(
     NavHost(
         navController = navState.navController,
         startDestination = Screen.MainGraph.Attendance,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable<Screen.MainGraph.Attendance> {
             MainScreen(
                 currentScreen = Screen.MainGraph.Attendance,
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
+                onNavigateToSubjectDetails = navState::navigateToSubjectDetails,
             )
         }
         composable<Screen.MainGraph.Productivity> {
@@ -56,6 +58,7 @@ fun ManabiNavHost(
                 currentScreen = Screen.MainGraph.Productivity,
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
+                onNavigateToSubjectDetails = navState::navigateToSubjectDetails,
             )
         }
         composable<Screen.MainGraph.Schedule> {
@@ -63,15 +66,25 @@ fun ManabiNavHost(
                 currentScreen = Screen.MainGraph.Schedule,
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
+                onNavigateToSubjectDetails = navState::navigateToSubjectDetails,
             )
         }
         composable<Screen.EditAttendance>(
-            typeMap = mapOf(typeOf<Attendance?>() to AttendanceNavType)
+            typeMap = mapOf(typeOf<Attendance?>() to AttendanceNavType),
         ) { backStackEntry ->
             val destination: Screen.EditAttendance = backStackEntry.toRoute()
             EditAttendanceMobileScreen(
                 attendance = destination.attendance,
-                onNavigateUp = { navState.navigateUp() }
+                onNavigateUp = { navState.navigateUp() },
+            )
+        }
+        composable<Screen.SubjectDetails>(
+            typeMap = mapOf(typeOf<Attendance>() to AttendanceNavType),
+        ) { backStackEntry ->
+            val destination: Screen.SubjectDetails = backStackEntry.toRoute()
+            SubjectDetailsMobileScreen(
+                attendance = destination.attendance,
+                onNavigateUp = { navState.navigateUp() },
             )
         }
     }

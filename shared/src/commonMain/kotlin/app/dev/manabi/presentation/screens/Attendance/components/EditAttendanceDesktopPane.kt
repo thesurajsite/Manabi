@@ -136,6 +136,35 @@ fun EditAttendanceDesktopPane(
                 ),
         )
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = uiState.teacher,
+            onValueChange = { viewModel.updateTeacherName(it) },
+            placeholder = { Text("Teacher Name") },
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.8f)
+                    .border(
+                        width = 2.dp,
+                        color = color,
+                        shape = RoundedCornerShape(14.dp),
+                    ),
+            shape = RoundedCornerShape(14.dp),
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    disabledBorderColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Black,
+                ),
+        )
+
         Spacer(modifier = Modifier.height(20.dp))
 
         // Status cards row

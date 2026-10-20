@@ -10,7 +10,7 @@ data class AttendanceEntity(
     val conducted: Long,
     val attended: Long,
     val requirement: Long,
-    val days: String,
+    val days: Map<String, Int>,
     val teacher: String,
     val createdAt: String,
     val updatedAt: String

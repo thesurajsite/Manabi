@@ -9,7 +9,7 @@ import app.dev.manabi.domain.model.Attendance
 
 @Composable
 fun rememberManabiNavState(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ): ManabiNavState = remember(navController) {
     ManabiNavState(navController)
 }
@@ -35,6 +35,10 @@ class ManabiNavState(
 
     fun navigateToEditAttendance(attendance: Attendance? = null) {
         navController.navigate(Screen.EditAttendance(attendance))
+    }
+
+    fun navigateToSubjectDetails(attendance: Attendance) {
+        navController.navigate(Screen.SubjectDetails(attendance))
     }
 
     fun navigateUp() {

@@ -3,6 +3,7 @@ package app.dev.manabi.presentation.screens.attendance
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.dev.manabi.domain.model.Attendance
+import app.dev.manabi.domain.model.AttendanceStatus
 import app.dev.manabi.domain.usecase.AddAttendanceUseCase
 import app.dev.manabi.domain.usecase.DeleteAttendanceUseCase
 import app.dev.manabi.domain.usecase.GetAttendanceUseCase
@@ -13,6 +14,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.time.Clock
+import kotlinx.datetime.*
 
 @OptIn(kotlin.time.ExperimentalTime::class)
 class AttendanceViewModel(
@@ -44,7 +46,7 @@ class AttendanceViewModel(
                 "Must Go" -> filteredList.filter { it.classesNeeded > 0 }
                 else -> filteredList
             }
-            
+
             filteredList
         }.stateIn(
             scope = viewModelScope,
@@ -60,25 +62,48 @@ class AttendanceViewModel(
         _selectedFilter.value = filter
     }
 
-    private val _showSubject = MutableStateFlow(false)
-    val showSubject = _showSubject.asStateFlow()
+    private val _isSubjectPaneOpen = MutableStateFlow(false)
+    val isSubjectPaneOpen = _isSubjectPaneOpen.asStateFlow()
 
-    private val _selectedAttendance = MutableStateFlow<Attendance?>(null)
-    val selectedAttendance = _selectedAttendance.asStateFlow()
+    private val _selectedSubjectId = MutableStateFlow<Long?>(null)
+    val selectedSubjectId = _selectedSubjectId.asStateFlow()
+
+    val selectedAttendance: StateFlow<Attendance?> =
+        combine(getAttendanceUseCase(), _selectedSubjectId) { list, id ->
+            list.find { it.id == id }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null,
+        )
 
     private val _uiState = MutableStateFlow(AttendanceUiState())
     val uiState = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            selectedAttendance.collect { subject ->
+                if (subject == null) return@collect
+                _uiState.update {
+                    it.copy(
+                        conducted = subject.conducted,
+                        attended = subject.attended,
+                        days = subject.days,
+                    )
+                }
+            }
+        }
+    }
+
     fun closeSubject() {
-        _showSubject.value = false
-        _selectedAttendance.value = null
+        _isSubjectPaneOpen.value = false
+        _selectedSubjectId.value = null
     }
 
     fun openSubject(attendance: Attendance?) {
-        _selectedAttendance.value = attendance
-        _showSubject.value = true
+        _selectedSubjectId.value = attendance?.id
+        _isSubjectPaneOpen.value = true
 
-        // Initialize UI state
         _uiState.value =
             if (attendance != null) {
                 AttendanceUiState(
@@ -162,6 +187,100 @@ class AttendanceViewModel(
             onSuccess()
         }
     }
+
+    /**
+     * Get today's date in dd-MM-yyyy format.
+     */
+    private fun currentDateString(): String {
+        val now = Clock.System.now()
+        val timeZone = TimeZone.currentSystemDefault()
+        val localDateTime = now.toLocalDateTime(timeZone)
+        val monthNum = when (localDateTime.month) {
+            Month.JANUARY -> 1
+            Month.FEBRUARY -> 2
+            Month.MARCH -> 3
+            Month.APRIL -> 4
+            Month.MAY -> 5
+            Month.JUNE -> 6
+            Month.JULY -> 7
+            Month.AUGUST -> 8
+            Month.SEPTEMBER -> 9
+            Month.OCTOBER -> 10
+            Month.NOVEMBER -> 11
+            Month.DECEMBER -> 12
+        }
+        return "%02d-%02d-%04d".format(
+            localDateTime.day,
+            monthNum,
+            localDateTime.year,
+        )
+    }
+
+    fun todayStatusFor(subject: Attendance): AttendanceStatus = subject.statusFor(currentDateString())
+
+    /**
+     * Mark attendance as Present for the given subject and date.
+     * Increments both conducted and attended counts (unless already present for that date).
+     */
+    fun markPresent(subjectId: Long, date: String = currentDateString()) {
+        viewModelScope.launch {
+            updateSubjectAttendance(subjectId, date, isPresent = true)
+        }
+    }
+    /**
+     * Mark attendance as Absent for the given subject and date.
+     * Increments conducted count only (unless already absent for that date).
+     */
+    fun markAbsent(subjectId: Long, date: String = currentDateString()) {
+        viewModelScope.launch {
+            updateSubjectAttendance(subjectId, date, isPresent = false)
+        }
+    }
+
+    private suspend fun updateSubjectAttendance(subjectId: Long, date: String, isPresent: Boolean) {
+        val currentList = getAttendanceUseCase().first()
+        val subject = currentList.find { it.id == subjectId } ?: return
+
+        val newDays = subject.days.toMutableMap()
+        val previousStatus = newDays[date]
+        newDays[date] = if (isPresent) 1 else 0
+
+        var newConducted = subject.conducted
+        var newAttended = subject.attended
+
+        when (previousStatus) {
+            null -> {
+                // New entry
+                newConducted++
+                if (isPresent) newAttended++
+            }
+            0 -> {
+                // Was absent
+                if (isPresent) {
+                    // Changed to present
+                    newAttended++
+                }
+                // conducted unchanged
+            }
+            1 -> {
+                // Was present
+                if (!isPresent) {
+                    // Changed to absent
+                    newAttended--
+                }
+                // conducted unchanged
+            }
+        }
+
+        val now = Clock.System.now().toString()
+        val updated = subject.copy(
+            conducted = newConducted,
+            attended = newAttended,
+            days = newDays,
+            updatedAt = now,
+        )
+        addAttendanceUseCase(updated)
+    }
 }
 
 data class AttendanceUiState(
@@ -171,7 +290,7 @@ data class AttendanceUiState(
     val attended: Int = 1,
     val requirement: Int = 75,
     val teacher: String = "",
-    val days: List<String> = emptyList(),
+    val days: Map<String, Int> = emptyMap(),
     val createdAt: String? = null,
 ) {
     val percentage: Int

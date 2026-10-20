@@ -12,14 +12,14 @@ class AttendanceRepositoryImpl(
 
     override fun getAllAttendance(): Flow<List<Attendance>> {
         return localDataSource.getSubjects().map { subjects ->
-            subjects.map { 
+            subjects.map {
                 Attendance(
                     id = it.id,
                     subjectName = it.subjectName,
                     conducted = it.conducted.toInt(),
                     attended = it.attended.toInt(),
                     requirement = it.requirement.toInt(),
-                    days = it.days.split(",").filter { day -> day.isNotEmpty() },
+                    days = it.days,
                     teacher = it.teacher,
                     createdAt = it.createdAt,
                     updatedAt = it.updatedAt
@@ -35,7 +35,7 @@ class AttendanceRepositoryImpl(
             conducted = attendance.conducted.toLong(),
             attended = attendance.attended.toLong(),
             requirement = attendance.requirement.toLong(),
-            days = attendance.days.joinToString(","),
+            days = attendance.days,
             teacher = attendance.teacher,
             createdAt = attendance.createdAt,
             updatedAt = attendance.updatedAt

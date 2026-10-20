@@ -12,26 +12,29 @@ fun TopLevelNavHost(
     currentScreen: Screen,
     isMobile: Boolean,
     onNavigateToEditAttendance: (Attendance?) -> Unit,
+    onNavigateToSubjectDetails: (Attendance) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (currentScreen) {
         Screen.MainGraph.Attendance -> AttendanceScreen(
             isMobile = isMobile,
             onNavigateToEditAttendance = onNavigateToEditAttendance,
-            modifier = modifier
+            onNavigateToSubjectDetails = onNavigateToSubjectDetails,
+            modifier = modifier,
         )
 
         Screen.MainGraph.Productivity -> ProductivityScreen(
             isMobile = isMobile,
-            modifier = modifier
+            modifier = modifier,
         )
 
         Screen.MainGraph.Schedule -> ScheduleScreen(
             isMobile = isMobile,
-            modifier = modifier
+            modifier = modifier,
         )
 
         Screen.EditAttendance -> Unit
+        Screen.SubjectDetails -> Unit
         else -> {}
     }
 }

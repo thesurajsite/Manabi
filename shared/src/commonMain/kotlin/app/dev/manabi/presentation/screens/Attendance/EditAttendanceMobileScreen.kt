@@ -120,6 +120,33 @@ fun EditAttendanceMobileScreen(
 
             Spacer(Modifier.height(5.dp))
 
+            OutlinedTextField(
+                value = uiState.teacher,
+                onValueChange = { viewModel.updateTeacherName(it) },
+                placeholder = { Text("Teacher Name") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 2.dp,
+                        color = color,
+                        shape = RoundedCornerShape(14.dp)
+                    ),
+                shape = RoundedCornerShape(14.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    disabledBorderColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Black
+                )
+            )
+
+            Spacer(Modifier.height(5.dp))
+
             // Status cards row
             Row(
                 modifier = Modifier.fillMaxWidth(),
