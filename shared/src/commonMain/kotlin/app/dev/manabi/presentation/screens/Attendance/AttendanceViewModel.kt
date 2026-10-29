@@ -239,12 +239,12 @@ class AttendanceViewModel(
     }
 
     /**
-     * Remove the attendance entry for the given subject and date.
-     * Decrements conducted, and attended too if the entry was present.
+     * Set the attendance for the given subject and date (dd-MM-yyyy):
+     * 1 = present, 0 = absent, null = remove the entry. Saved immediately.
      */
-    fun removeEntry(subjectId: Long, date: String) {
+    fun setDayStatus(subjectId: Long, date: String, status: Int?) {
         viewModelScope.launch {
-            updateSubjectAttendance(subjectId, date, newStatus = null)
+            updateSubjectAttendance(subjectId, date, newStatus = status)
         }
     }
 
@@ -319,4 +319,8 @@ data class AttendanceUiState(
         }
 
     val isOnTrack: Boolean get() = percentage >= requirement
+
+    val missed: Int get() = conducted - attended
+
+    val isNewSubject: Boolean get() = id == 0L
 }

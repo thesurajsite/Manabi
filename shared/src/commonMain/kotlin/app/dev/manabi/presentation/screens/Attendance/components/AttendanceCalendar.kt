@@ -1,5 +1,6 @@
 package app.dev.manabi.presentation.screens.attendance.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,10 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -18,11 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,11 +28,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.dev.manabi.presentation.components.SectionCard
+import app.dev.manabi.presentation.theme.absentFill
+import app.dev.manabi.presentation.theme.absentText
+import app.dev.manabi.presentation.theme.cardBorder
+import app.dev.manabi.presentation.theme.presentFill
+import app.dev.manabi.presentation.theme.presentText
 import app.dev.manabi.presentation.theme.primary
+import app.dev.manabi.presentation.theme.textDisabled
+import app.dev.manabi.presentation.theme.textMuted
+import app.dev.manabi.presentation.theme.textPrimary
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -49,16 +56,15 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
-private val PresentColor = Color(0xFF4CAF50)
-private val AbsentColor = Color(0xFFFF5252)
 private val WeekDays = listOf("S", "M", "T", "W", "T", "F", "S")
 
 /**
- * Month calendar that marks each day from [days] (keys in dd-MM-yyyy):
- * green circle for present (1), red circle for absent (0), nothing if not in the map.
+ * "Attendance log" card: a month calendar that marks each day from [days] (keys in dd-MM-yyyy):
+ * green for present (1), red for absent (0), nothing if not in the map.
  *
- * Tapping a day opens a menu to change its status when [onStatusChange] is set;
+ * When [onStatusChange] is set, tapping a day opens a [DayActionPanel] below the grid;
  * it is called with the date key and the new status (1, 0, or null to remove the entry).
+ * When it is null (unsaved subject), days can't be tapped.
  */
 @Composable
 fun AttendanceCalendar(
@@ -68,6 +74,7 @@ fun AttendanceCalendar(
 ) {
     val today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
     var visibleMonth by remember { mutableStateOf(LocalDate(today.year, today.month, 1)) }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
 
     val daysInMonth = visibleMonth.daysUntil(visibleMonth.plus(1, DateTimeUnit.MONTH))
     // Sunday-first: Sunday = 0, Monday = 1, ...
@@ -75,43 +82,55 @@ fun AttendanceCalendar(
     val cells: List<LocalDate?> =
         List(leadingBlanks) { null } + (0 until daysInMonth).map { visibleMonth.plus(it, DateTimeUnit.DAY) }
 
-    Column(
-        modifier =
-            modifier
-                .border(width = 2.dp, color = primary, shape = RoundedCornerShape(18.dp))
-                .clip(RoundedCornerShape(18.dp))
-                .background(Color.White)
-                .padding(12.dp),
-    ) {
+    SectionCard(modifier = modifier, spacing = 12.dp) {
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = "Attendance log",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = textPrimary,
+            )
+            Text(
+                text = if (onStatusChange != null) {
+                    "Tap a date to mark it. Date changes save instantly."
+                } else {
+                    "Today is marked present. Save the subject to mark other days."
+                },
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = textMuted,
+            )
+        }
+
         // Month header
         Row(
-            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
                 text = "${visibleMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${visibleMonth.year}",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
-                modifier = Modifier.weight(1f).padding(start = 8.dp),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = textPrimary,
+                modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = { visibleMonth = visibleMonth.minus(1, DateTimeUnit.MONTH) }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = "Previous month",
-                    tint = primary,
-                )
-            }
-            IconButton(onClick = { visibleMonth = visibleMonth.plus(1, DateTimeUnit.MONTH) }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "Next month",
-                    tint = primary,
-                )
-            }
+            MonthNavButton(
+                icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                contentDescription = "Previous month",
+                onClick = {
+                    visibleMonth = visibleMonth.minus(1, DateTimeUnit.MONTH)
+                    selectedDate = null
+                },
+            )
+            MonthNavButton(
+                icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Next month",
+                onClick = {
+                    visibleMonth = visibleMonth.plus(1, DateTimeUnit.MONTH)
+                    selectedDate = null
+                },
+            )
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
 
         // Weekday labels
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -119,42 +138,65 @@ fun AttendanceCalendar(
                 Text(
                     text = label,
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold,
+                    color = textMuted,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f),
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
-
         // Day grid
-        cells.chunked(7).forEach { week ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                for (i in 0 until 7) {
-                    val date = week.getOrNull(i)
-                    Box(
-                        modifier = Modifier.weight(1f).aspectRatio(1f),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (date != null) {
-                            val key = date.toKey()
-                            CalendarDay(
-                                date = date,
-                                status = days[key],
-                                isToday = date == today,
-                                onStatusChange =
-                                    onStatusChange?.let { callback ->
-                                        { status -> callback(key, status) }
-                                    },
-                            )
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            cells.chunked(7).forEach { week ->
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    for (i in 0 until 7) {
+                        val date = week.getOrNull(i)
+                        Box(
+                            modifier = Modifier.weight(1f),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (date != null) {
+                                CalendarDay(
+                                    date = date,
+                                    status = days[date.toKey()],
+                                    isToday = date == today,
+                                    isSelected = date == selectedDate,
+                                    isEnabled = onStatusChange != null,
+                                    onClick = { selectedDate = if (date == selectedDate) null else date },
+                                )
+                            }
                         }
                     }
                 }
+            }
+        }
+
+        val selected = selectedDate
+        if (selected != null && onStatusChange != null) {
+            DayActionPanel(
+                date = selected,
+                status = days[selected.toKey()],
+                onStatusChange = { status ->
+                    onStatusChange(selected.toKey(), status)
+                    selectedDate = null
+                },
+            )
+        }
+
+        // Legend
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(top = 4.dp),
+        ) {
+            LegendItem(label = "Present") {
+                Box(Modifier.size(10.dp).clip(CircleShape).background(presentFill))
+            }
+            LegendItem(label = "Absent") {
+                Box(Modifier.size(10.dp).clip(CircleShape).background(absentFill))
+            }
+            LegendItem(label = "Today") {
+                Box(Modifier.size(10.dp).border(1.5.dp, primary, CircleShape))
             }
         }
     }
@@ -165,88 +207,80 @@ private fun CalendarDay(
     date: LocalDate,
     status: Int?,
     isToday: Boolean,
-    onStatusChange: ((Int?) -> Unit)?,
+    isSelected: Boolean,
+    isEnabled: Boolean,
+    onClick: () -> Unit,
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    val circleColor =
+    val fill: Color? =
         when (status) {
-            1 -> PresentColor
-            0 -> AbsentColor
+            1 -> presentFill
+            0 -> absentFill
             else -> null
+        }
+    val textColor =
+        when {
+            status == 1 -> presentText
+            status == 0 -> absentText
+            isToday -> primary
+            isEnabled -> textPrimary
+            else -> textDisabled
+        }
+    val statusLabel =
+        when (status) {
+            1 -> "present"
+            0 -> "absent"
+            else -> "not marked"
         }
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier =
-            Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .then(
-                    if (onStatusChange != null) {
-                        Modifier.clickable { showMenu = true }
-                    } else {
-                        Modifier
-                    },
-                )
-                .then(if (circleColor != null) Modifier.background(circleColor) else Modifier)
-                .then(
-                    if (isToday && circleColor == null) {
-                        Modifier.border(1.dp, primary, CircleShape)
-                    } else {
-                        Modifier
-                    },
-                ),
+        modifier = Modifier
+            .size(44.dp)
+            .then(if (isSelected) Modifier.border(2.dp, textPrimary, CircleShape) else Modifier)
+            .padding(3.dp)
+            .clip(CircleShape)
+            .then(if (fill != null) Modifier.background(fill) else Modifier)
+            // Today keeps its ring even when marked, so it can always be found
+            .then(if (isToday) Modifier.border(2.dp, primary, CircleShape) else Modifier)
+            .clickable(enabled = isEnabled, onClick = onClick)
+            .semantics { contentDescription = "${date.day} ${date.month.name.lowercase()}, $statusLabel" },
     ) {
         Text(
             text = date.day.toString(),
             fontSize = 14.sp,
-            fontWeight = if (isToday) FontWeight.SemiBold else FontWeight.Normal,
-            color =
-                when {
-                    circleColor != null -> Color.White
-                    isToday -> primary
-                    else -> Color.Black
-                },
+            fontWeight = if (fill != null || isToday) FontWeight.Bold else FontWeight.Medium,
+            color = textColor,
         )
+    }
+}
 
-        if (onStatusChange != null) {
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false },
-            ) {
-                // Not marked: present / absent
-                // Absent: present / remove
-                // Present: absent / remove
-                if (status != 1) {
-                    DropdownMenuItem(
-                        text = { Text("Mark present", color = PresentColor) },
-                        onClick = {
-                            showMenu = false
-                            onStatusChange(1)
-                        },
-                    )
-                }
-                if (status != 0) {
-                    DropdownMenuItem(
-                        text = { Text("Mark absent", color = AbsentColor) },
-                        onClick = {
-                            showMenu = false
-                            onStatusChange(0)
-                        },
-                    )
-                }
-                if (status != null) {
-                    DropdownMenuItem(
-                        text = { Text("Remove entry") },
-                        onClick = {
-                            showMenu = false
-                            onStatusChange(null)
-                        },
-                    )
-                }
-            }
-        }
+@Composable
+private fun MonthNavButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    OutlinedIconButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, cardBorder),
+        modifier = Modifier.size(40.dp),
+    ) {
+        Icon(imageVector = icon, contentDescription = contentDescription, tint = textPrimary)
+    }
+}
+
+@Composable
+private fun LegendItem(
+    label: String,
+    indicator: @Composable () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        indicator()
+        Text(text = label, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = textMuted)
     }
 }
 

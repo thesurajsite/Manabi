@@ -1,34 +1,24 @@
 package app.dev.manabi.presentation.screens.attendance
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.TrackChanges
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.dev.manabi.domain.model.Attendance
-import app.dev.manabi.presentation.screens.attendance.components.AttendanceCalendar
-import app.dev.manabi.presentation.screens.attendance.components.AttendanceRingCard
-import app.dev.manabi.presentation.screens.attendance.components.ClassesNeededCard
-import app.dev.manabi.presentation.screens.attendance.components.StepperSection
+import app.dev.manabi.presentation.screens.attendance.components.DeleteSubjectDialog
+import app.dev.manabi.presentation.screens.attendance.components.EditAttendanceContent
+import app.dev.manabi.presentation.screens.attendance.components.EditAttendanceTopBar
+import app.dev.manabi.presentation.theme.screenBackground
 import org.koin.compose.viewmodel.koinViewModel
 
-private val White = Color(0xFFFFFFFF)
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAttendanceMobileScreen(
     attendance: Attendance?,
@@ -45,211 +35,37 @@ fun EditAttendanceMobileScreen(
     }
 
     if (showDeleteConfirmation) {
-        AlertDialog(
-            onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text("Delete Subject") },
-            text = { Text("Are you sure you want to delete this subject?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteConfirmation = false
-                        viewModel.deleteAttendance(uiState.id, onNavigateUp)
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
-                ) {
-                    Text("Delete")
-                }
+        DeleteSubjectDialog(
+            onConfirm = {
+                showDeleteConfirmation = false
+                viewModel.deleteAttendance(uiState.id, onNavigateUp)
             },
-            dismissButton = {
-                TextButton(onClick = { showDeleteConfirmation = false }) {
-                    Text("Cancel")
-                }
-            }
+            onDismiss = { showDeleteConfirmation = false },
         )
     }
 
     Scaffold(
+        containerColor = screenBackground,
         topBar = {
-            TopAppBar(
-                title = { Text(if (attendance == null) "Add Attendance" else "Edit Attendance") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
+            EditAttendanceTopBar(
+                title = if (attendance == null) "New subject" else "Edit subject",
+                onBack = onNavigateUp,
+                onDelete = if (attendance != null) ({ showDeleteConfirmation = true }) else null,
+                modifier = Modifier.statusBarsPadding(),
             )
         },
         modifier = modifier.fillMaxSize()
     ) { paddingValues ->
-
-        Column(
+        EditAttendanceContent(
+            uiState = uiState,
+            onSubjectNameChange = viewModel::updateSubjectName,
+            onTeacherNameChange = viewModel::updateTeacherName,
+            onRequirementChange = viewModel::updateRequirement,
+            onSave = { viewModel.saveAttendance(onSuccess = onNavigateUp) },
+            onDayStatusChange = { date, status -> viewModel.setDayStatus(uiState.id, date, status) },
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            val color = Color(0xFF6D28D9)
-            OutlinedTextField(
-                value = uiState.subjectName,
-                onValueChange = { viewModel.updateSubjectName(it) },
-                placeholder = { Text("Subject Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = 2.dp,
-                        color = color,
-                        shape = RoundedCornerShape(14.dp)
-                    ),
-                shape = RoundedCornerShape(14.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    disabledBorderColor = Color.Transparent,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    disabledContainerColor = Color.White,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
-                    disabledTextColor = Color.Black
-                )
-            )
-
-            Spacer(Modifier.height(5.dp))
-
-            OutlinedTextField(
-                value = uiState.teacher,
-                onValueChange = { viewModel.updateTeacherName(it) },
-                placeholder = { Text("Teacher Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = 2.dp,
-                        color = color,
-                        shape = RoundedCornerShape(14.dp)
-                    ),
-                shape = RoundedCornerShape(14.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    disabledBorderColor = Color.Transparent,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    disabledContainerColor = Color.White,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
-                    disabledTextColor = Color.Black
-                )
-            )
-
-            Spacer(Modifier.height(5.dp))
-
-            // Status cards row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                // Attendance percent card
-                AttendanceRingCard(
-                    modifier = Modifier.weight(0.8f),
-                    percentage = uiState.percentage,
-                    isOnTrack = uiState.isOnTrack
-                )
-                // Classes needed card
-                ClassesNeededCard(
-                    modifier = Modifier.weight(0.8f),
-                    needed = uiState.classesNeeded,
-                    canSkip = uiState.canSkip,
-                    requirement = uiState.requirement,
-                    isOnTrack = uiState.isOnTrack
-                )
-            }
-
-            Spacer(Modifier.height(48.dp))
-
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ){
-                // Requirement section
-                StepperSection(
-                    icon = Icons.Filled.TrackChanges,
-                    title = "Requirement",
-                    pill = "target",
-                    value = "${uiState.requirement}%",
-                    onMinus = {
-                        viewModel.updateRequirement(uiState.requirement - 5)
-                    },
-                    onPlus = {
-                        viewModel.updateRequirement(uiState.requirement + 5)
-                    },
-                    modifier = Modifier
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(52.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF6C63FF)),
-                    onClick = {
-                        viewModel.saveAttendance(onSuccess = onNavigateUp)
-                    },
-                ) {
-                    Text(
-                        text = if (attendance == null) "Add Attendance" else "Save changes",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = White,
-                        letterSpacing = 0.3.sp
-                    )
-                }
-
-                if (attendance != null) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(
-                        onClick = { showDeleteConfirmation = true },
-                        modifier = Modifier
-                            .size(52.dp)
-                            .background(Color.White, RoundedCornerShape(14.dp))
-                            .border(1.dp, Color.Red, RoundedCornerShape(14.dp))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
-                            tint = Color.Red
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Attendance calendar
-            AttendanceCalendar(
-                days = uiState.days,
-                modifier = Modifier.fillMaxWidth(),
-                // Only a saved subject can be marked
-                onStatusChange = if (uiState.id == 0L) null else { date, status ->
-                    when (status) {
-                        1 -> viewModel.markPresent(uiState.id, date)
-                        0 -> viewModel.markAbsent(uiState.id, date)
-                        else -> viewModel.removeEntry(uiState.id, date)
-                    }
-                }
-            )
-        }
+                .fillMaxSize(),
+        )
     }
 }
