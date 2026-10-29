@@ -117,7 +117,8 @@ class AttendanceViewModel(
                     createdAt = attendance.createdAt,
                 )
             } else {
-                AttendanceUiState()
+                // New subject starts with today marked present (1 conducted, 1 attended)
+                AttendanceUiState(days = mapOf(currentDateString() to 1))
             }
     }
 
@@ -224,7 +225,7 @@ class AttendanceViewModel(
      */
     fun markPresent(subjectId: Long, date: String = currentDateString()) {
         viewModelScope.launch {
-            updateSubjectAttendance(subjectId, date, isPresent = true)
+            updateSubjectAttendance(subjectId, date, newStatus = 1)
         }
     }
     /**
@@ -233,43 +234,50 @@ class AttendanceViewModel(
      */
     fun markAbsent(subjectId: Long, date: String = currentDateString()) {
         viewModelScope.launch {
-            updateSubjectAttendance(subjectId, date, isPresent = false)
+            updateSubjectAttendance(subjectId, date, newStatus = 0)
         }
     }
 
-    private suspend fun updateSubjectAttendance(subjectId: Long, date: String, isPresent: Boolean) {
+    /**
+     * Remove the attendance entry for the given subject and date.
+     * Decrements conducted, and attended too if the entry was present.
+     */
+    fun removeEntry(subjectId: Long, date: String) {
+        viewModelScope.launch {
+            updateSubjectAttendance(subjectId, date, newStatus = null)
+        }
+    }
+
+    /** [newStatus]: 1 = present, 0 = absent, null = remove the entry. */
+    private suspend fun updateSubjectAttendance(subjectId: Long, date: String, newStatus: Int?) {
         val currentList = getAttendanceUseCase().first()
         val subject = currentList.find { it.id == subjectId } ?: return
 
         val newDays = subject.days.toMutableMap()
         val previousStatus = newDays[date]
-        newDays[date] = if (isPresent) 1 else 0
+        if (previousStatus == newStatus) return
+
+        if (newStatus == null) newDays.remove(date) else newDays[date] = newStatus
 
         var newConducted = subject.conducted
         var newAttended = subject.attended
 
+        // Undo the previous entry
         when (previousStatus) {
-            null -> {
-                // New entry
-                newConducted++
-                if (isPresent) newAttended++
-            }
-            0 -> {
-                // Was absent
-                if (isPresent) {
-                    // Changed to present
-                    newAttended++
-                }
-                // conducted unchanged
-            }
             1 -> {
-                // Was present
-                if (!isPresent) {
-                    // Changed to absent
-                    newAttended--
-                }
-                // conducted unchanged
+                newConducted--
+                newAttended--
             }
+            0 -> newConducted--
+        }
+
+        // Apply the new entry
+        when (newStatus) {
+            1 -> {
+                newConducted++
+                newAttended++
+            }
+            0 -> newConducted++
         }
 
         val now = Clock.System.now().toString()

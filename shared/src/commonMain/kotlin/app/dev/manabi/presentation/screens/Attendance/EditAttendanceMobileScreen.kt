@@ -3,12 +3,12 @@ package app.dev.manabi.presentation.screens.attendance
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.dev.manabi.domain.model.Attendance
+import app.dev.manabi.presentation.screens.attendance.components.AttendanceCalendar
 import app.dev.manabi.presentation.screens.attendance.components.AttendanceRingCard
 import app.dev.manabi.presentation.screens.attendance.components.ClassesNeededCard
 import app.dev.manabi.presentation.screens.attendance.components.StepperSection
@@ -88,6 +89,7 @@ fun EditAttendanceMobileScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -189,40 +191,6 @@ fun EditAttendanceMobileScreen(
                 )
             }
 
-            Spacer(Modifier.height(5.dp))
-
-            // Classes conducted
-            StepperSection(
-                icon = Icons.Filled.School,
-                title = "Classes conducted",
-                pill = "total",
-                value = "${uiState.conducted}",
-                onMinus = {
-                    viewModel.updateConducted(uiState.conducted - 1)
-                },
-                onPlus = {
-                    viewModel.updateConducted(uiState.conducted + 1)
-                },
-                modifier = Modifier
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            // Classes attended
-            StepperSection(
-                icon = Icons.Filled.CheckCircle,
-                title = "Classes attended",
-                pill = "yours",
-                value = "${uiState.attended}",
-                onMinus = {
-                    viewModel.updateAttended(uiState.attended - 1)
-                },
-                onPlus = {
-                    viewModel.updateAttended(uiState.attended + 1)
-                },
-                modifier = Modifier
-            )
-
             Spacer(modifier = Modifier.height(20.dp))
 
             Row(
@@ -266,6 +234,22 @@ fun EditAttendanceMobileScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Attendance calendar
+            AttendanceCalendar(
+                days = uiState.days,
+                modifier = Modifier.fillMaxWidth(),
+                // Only a saved subject can be marked
+                onStatusChange = if (uiState.id == 0L) null else { date, status ->
+                    when (status) {
+                        1 -> viewModel.markPresent(uiState.id, date)
+                        0 -> viewModel.markAbsent(uiState.id, date)
+                        else -> viewModel.removeEntry(uiState.id, date)
+                    }
+                }
+            )
         }
     }
 }
