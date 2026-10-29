@@ -7,7 +7,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
 
     alias(libs.plugins.kotlinxSerialization)
-    alias(libs.plugins.sqldelight)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -46,12 +47,14 @@ kotlin {
     }
 
     sourceSets {
+        val androidMain by getting {
+            kotlin.srcDir("build/generated/ksp/android/androidMain/kotlin")
+        }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.compose.ui.tooling.preview)
             implementation(libs.androidx.compose.ui.tooling)
-            implementation(libs.sqldelight.android.driver)
             implementation(libs.koin.android)
         }
         commonMain.dependencies {
@@ -70,15 +73,13 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.kotlinx.datetime)
 
-            implementation(libs.sqldelight.runtime)
-            implementation(libs.sqldelight.coroutines)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
             implementation(compose.materialIconsExtended)
         }
         iosMain.dependencies {
-            implementation(libs.sqldelight.native.driver)
         }
         jvmMain.dependencies {
-            implementation(libs.sqldelight.sqlite.driver)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -89,12 +90,20 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     androidRuntimeClasspath(libs.androidx.compose.ui.tooling)
+
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspAndroidHostTest", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
 }
 
-sqldelight {
-    databases {
-        create("ManabiDatabase") {
-            packageName.set("app.dev.manabi.database")
-        }
-    }
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+// Wire KSP Room processor into the Android compilation so ManabiDatabase_Impl
+// is generated for the androidMain target.
+tasks.named("compileAndroidMain") {
+    dependsOn(tasks.named("kspAndroidMain"))
 }

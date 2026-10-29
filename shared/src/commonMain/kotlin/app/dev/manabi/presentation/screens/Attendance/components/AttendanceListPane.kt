@@ -3,9 +3,11 @@ package app.dev.manabi.presentation.screens.attendance.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.MoreVert
@@ -27,11 +29,20 @@ import org.koin.compose.viewmodel.koinViewModel
 val filterTabs = listOf("All", "On Track", "At Risk", "Can Miss", "Must Go")
 
 @Composable
-fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
+fun AttendanceListPane(
+    onItemClick: (Attendance) -> Unit,
+    onChevronClick: (Attendance) -> Unit,
+    onPresentClick: (Attendance) -> Unit,
+    onAbsentClick: (Attendance) -> Unit,
+    onAddClick: () -> Unit,
+) {
     val viewmodel: AttendanceViewModel = koinViewModel()
     val attendanceList by viewmodel.attendanceList.collectAsStateWithLifecycle()
     val searchQuery by viewmodel.searchQuery.collectAsStateWithLifecycle()
     val selectedFilter by viewmodel.selectedFilter.collectAsStateWithLifecycle()
+
+    // Track expanded state per subject
+    val expandedSubjects = remember { mutableStateMapOf<Long, Boolean>() }
 
     Column(
         modifier =
@@ -59,10 +70,7 @@ fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
                 overflow = TextOverflow.Ellipsis,
             )
             // Add Attendance
-            IconButton(onClick = {
-                viewmodel.openSubject(null)
-                onSubjectClick(null)
-            }) {
+            IconButton(onClick = onAddClick) {
                 Icon(
                     imageVector = Icons.Filled.AddBox,
                     contentDescription = "New subject",
@@ -126,34 +134,52 @@ fun AttendanceListPane(onSubjectClick: (Attendance?) -> Unit) {
             }
         }
 
-        // Subject List
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+        // Subject List using LazyColumn (bounded height via weight)
+        if (attendanceList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp, 32.dp, 12.dp, 0.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "No attendance records found",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
                     .padding(horizontal = 12.dp),
-        ) {
-            if (attendanceList.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(top = 32.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "No attendance records found",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            } else {
-                attendanceList.forEach { subject ->
-                    AttendanceItem(
-                        subject = subject,
-                        onClick = {
-                            viewmodel.openSubject(subject)
-                            onSubjectClick(subject)
-                        },
-                    )
+            ) {
+                items(
+                    items = attendanceList,
+                    key = { it.id }
+                ) { subject ->
+                    val isExpanded = expandedSubjects[subject.id] ?: false
+
+                        AttendanceItem(
+                            subject = subject,
+                            isExpanded = isExpanded,
+                            status = viewmodel.todayStatusFor(subject),
+                            onItemClick = {
+                                // Toggle expansion on item click
+                                expandedSubjects[subject.id] = !isExpanded
+                                onItemClick(subject)
+                            },
+                            onChevronClick = {
+                                onChevronClick(subject)
+                            },
+                            onPresentClick = {
+                                onPresentClick(subject)
+                            },
+                            onAbsentClick = {
+                                onAbsentClick(subject)
+                            },
+                        )
+
                     HorizontalDivider(
                         color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                         thickness = 0.5.dp,

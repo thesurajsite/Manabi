@@ -1,35 +1,35 @@
 [versions]
-agp = "8.13.1"
-android-compileSdk = "36"
+agp = "9.3.1"
+android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activity = "1.13.0"
-androidx-appcompat = "1.7.1"
-androidx-compose-ui = "1.7.0"
-androidx-core = "1.18.0"
+androidx-appcompat = "1.8.0"
+androidx-compose-ui = "1.12.1"
+androidx-core = "1.19.1"
 androidx-espresso = "3.7.0"
-androidx-lifecycle = "2.11.0-beta01"
+androidx-lifecycle = "2.11.0"
 androidx-testExt = "1.3.0"
 androidx-navigation3 = "1.1.2"
 jetbrains-navigation3 = "1.1.1"
 jetbrains-navigation = "2.9.2"
 koin = "4.2.2"
-composeMultiplatform = "1.11.0"
+composeMultiplatform = "1.12.2"
 junit = "4.13.2"
-kotlin = "2.3.21"
+kotlin = "2.4.21"
 kotlinx-coroutines = "1.11.0"
 kotlinx-datetime = "0.8.0"
-kotlinx-serialization = "1.8.0"
-material3 = "1.11.0-alpha07"
-sqldelight = "2.1.0"
+kotlinx-serialization = "1.12.0"
+material3 = "1.12.0-alpha03"
+room = "2.8.5"
+sqlite = "2.7.1"
+ksp = "2.3.12"
 
 [libraries]
 
-sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
-sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
-sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
-sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -69,4 +69,5 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = { id = "androidx.room", version.ref = "room" }

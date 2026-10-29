@@ -20,7 +20,8 @@ import app.dev.manabi.presentation.navigation.components.NavigationRailBar
 fun MainScreen(
     currentScreen: Screen,
     onNavigateToMain: (Screen) -> Unit,
-    onNavigateToEditAttendance: (Attendance?) -> Unit
+    onNavigateToEditAttendance: (Attendance?) -> Unit,
+    onNavigateToSubjectDetails: (Attendance) -> Unit,
 ) {
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -31,7 +32,7 @@ fun MainScreen(
                 bottomBar = {
                     BottomBar(
                         currentScreen = currentScreen,
-                        onNavigate = onNavigateToMain
+                        onNavigate = onNavigateToMain,
                     )
                 }
             ) { paddingValues ->
@@ -40,7 +41,8 @@ fun MainScreen(
                     currentScreen = currentScreen,
                     isMobile = true,
                     onNavigateToEditAttendance = onNavigateToEditAttendance,
-                    modifier = Modifier.padding(paddingValues)
+                    onNavigateToSubjectDetails = onNavigateToSubjectDetails,
+                    modifier = Modifier.padding(paddingValues),
                 )
             }
         } else {
@@ -63,7 +65,8 @@ fun MainScreen(
                         currentScreen = currentScreen,
                         isMobile = false,
                         onNavigateToEditAttendance = onNavigateToEditAttendance,
-                        modifier = Modifier.fillMaxSize()
+                        onNavigateToSubjectDetails = onNavigateToSubjectDetails,
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
             }

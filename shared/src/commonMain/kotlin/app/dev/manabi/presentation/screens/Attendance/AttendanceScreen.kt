@@ -8,12 +8,15 @@ import app.dev.manabi.domain.model.Attendance
 fun AttendanceScreen(
     isMobile: Boolean,
     onNavigateToEditAttendance: (Attendance?) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToSubjectDetails: (Attendance) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     if (isMobile) {
         AttendanceMobileScreen(
             onNavigateToEditAttendance = onNavigateToEditAttendance,
-            modifier = modifier)
+            onNavigateToSubjectDetails = onNavigateToSubjectDetails,
+            modifier = modifier,
+        )
     } else {
         AttendanceDesktopScreen(modifier)
     }
