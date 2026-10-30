@@ -6,9 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,27 +18,47 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.domain.model.AttendanceStatus
+import app.dev.manabi.presentation.theme.absentFill
+import app.dev.manabi.presentation.theme.absentRed
+import app.dev.manabi.presentation.theme.absentText
+import app.dev.manabi.presentation.theme.neutralSoft
+import app.dev.manabi.presentation.theme.presentFill
+import app.dev.manabi.presentation.theme.presentText
+import app.dev.manabi.presentation.theme.primary
+import app.dev.manabi.presentation.theme.primarySoft
+import app.dev.manabi.presentation.theme.primaryTint
+import app.dev.manabi.presentation.theme.primaryTintBorder
+import app.dev.manabi.presentation.theme.textDisabled
+import app.dev.manabi.presentation.theme.textMuted
+import app.dev.manabi.presentation.theme.textPrimary
 
+/**
+ * One subject row in the attendance list: % ring, name, teacher and attended/conducted.
+ * When [isExpanded], shows today's Present / Absent buttons; the one matching [status] is disabled.
+ * [isSelected] highlights the row (the subject open in the desktop detail pane).
+ */
 @Suppress("ktlint:standard:function-naming")
 @Composable
 fun AttendanceItem(
@@ -48,173 +68,159 @@ fun AttendanceItem(
     onPresentClick: (Attendance) -> Unit,
     onAbsentClick: (Attendance) -> Unit,
     isExpanded: Boolean = false,
+    isSelected: Boolean = false,
     status: AttendanceStatus = AttendanceStatus.NOT_MARKED,
 ) {
-    val presentEnabled = status != AttendanceStatus.PRESENT
-    val absentEnabled = status != AttendanceStatus.ABSENT
-
-    val percentage = if (subject.conducted > 0) (subject.attended * 100) / subject.conducted else 0
+    val shape = RoundedCornerShape(14.dp)
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .then(
+                if (isSelected) {
+                    Modifier.background(primaryTint).border(1.dp, primaryTintBorder, shape)
+                } else {
+                    Modifier
+                },
+            ),
     ) {
-        // Header row - always visible
         Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = { onItemClick(subject) })
-                    .padding(vertical = 10.dp, horizontal = 4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { onItemClick(subject) })
+                .padding(start = 12.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Circular Progress Bar
             CircularProgressBar(
-                percent = percentage,
-                size = 60.dp,
-                strokeWidth = 5.dp,
-                color = Color(0xFF6C63FF),
-                trackColor = Color(0x33A78BFA),
-                textColor = Color(0xFF6C63FF),
-                text = "$percentage%",
+                percent = subject.percentage,
+                text = "${subject.percentage}%",
+                size = 48.dp,
+                strokeWidth = 4.dp,
+                color = if (subject.isOnTrack) primary else absentRed,
+                trackColor = primarySoft,
+                textColor = textPrimary,
+                fontSize = 12.sp,
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // Name + subtitle
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = subject.subjectName,
-                    style =
-                        MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 15.sp,
-                        ),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Spacer(modifier = Modifier.height(2.dp))
-
-                // Teacher Name
                 Text(
                     text = subject.teacher,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = textMuted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // Stats: C: xx | A: xx
             Column(horizontalAlignment = Alignment.End) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    StatLabel(label = "C:", value = subject.conducted.toString())
-                    Box(
-                        modifier =
-                            Modifier
-                                .padding(horizontal = 6.dp)
-                                .width(1.dp)
-                                .height(14.dp)
-                                .background(MaterialTheme.colorScheme.outlineVariant),
+                Row {
+                    Text(
+                        text = subject.attended.toString(),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = textPrimary,
                     )
-                    StatLabel(label = "A:", value = subject.attended.toString())
+                    Text(
+                        text = "/${subject.conducted}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = textMuted,
+                    )
                 }
+                Text(
+                    text = "attended",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = textMuted,
+                )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
             IconButton(onClick = { onChevronClick(subject) }) {
-                Text(
-                    text = "›",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Open ${subject.subjectName}",
+                    tint = textMuted,
                 )
             }
         }
 
-        // Expanded content - Present/Absent buttons
+        // Expanded content - today's Present / Absent buttons
         AnimatedVisibility(
             visible = isExpanded,
             enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
             exit = fadeOut() + shrinkVertically(),
         ) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp, vertical = 8.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Button(
-                        onClick = { onPresentClick(subject) },
-                        enabled = presentEnabled,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4CAF50),
-                            contentColor = Color.White,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        ),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.size(32.dp),
-                        shape = CircleShape,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Present",
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Button(
-                        onClick = { onAbsentClick(subject) },
-                        enabled = absentEnabled,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF5252),
-                            contentColor = Color.White,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        ),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.size(32.dp),
-                        shape = CircleShape,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Absent",
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
-                }
+                Text(
+                    text = "Today",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = textMuted,
+                    modifier = Modifier.weight(1f),
+                )
+                TodayButton(
+                    label = "Present",
+                    icon = Icons.Filled.Check,
+                    containerColor = presentFill,
+                    contentColor = presentText,
+                    enabled = status != AttendanceStatus.PRESENT,
+                    onClick = { onPresentClick(subject) },
+                )
+                TodayButton(
+                    label = "Absent",
+                    icon = Icons.Filled.Close,
+                    containerColor = absentFill,
+                    contentColor = absentText,
+                    enabled = status != AttendanceStatus.ABSENT,
+                    onClick = { onAbsentClick(subject) },
+                )
             }
         }
     }
 }
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
-fun StatLabel(
+private fun TodayButton(
     label: String,
-    value: String,
+    icon: ImageVector,
+    containerColor: Color,
+    contentColor: Color,
+    enabled: Boolean,
+    onClick: () -> Unit,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = value,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(12.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        elevation = null,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = neutralSoft,
+            disabledContentColor = textDisabled,
+        ),
+        modifier = Modifier.height(36.dp),
+    ) {
+        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(16.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(text = label, fontSize = 13.sp, fontWeight = FontWeight.Bold)
     }
 }

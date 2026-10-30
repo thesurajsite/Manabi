@@ -46,7 +46,7 @@ fun MainScreen(
                 )
             }
         } else {
-            val railWidth = 60.dp
+            val railWidth = 88.dp
 
             Row(
                 modifier = Modifier.fillMaxSize()

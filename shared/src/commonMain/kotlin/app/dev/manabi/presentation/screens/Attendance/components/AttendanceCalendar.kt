@@ -7,7 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,7 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +37,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.dev.manabi.presentation.components.SectionCard
@@ -56,7 +61,8 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
-private val WeekDays = listOf("S", "M", "T", "W", "T", "F", "S")
+private val WeekDaysShort = listOf("S", "M", "T", "W", "T", "F", "S")
+private val WeekDaysLong = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
 /**
  * "Attendance log" card: a month calendar that marks each day from [days] (keys in dd-MM-yyyy):
@@ -65,11 +71,14 @@ private val WeekDays = listOf("S", "M", "T", "W", "T", "F", "S")
  * When [onStatusChange] is set, tapping a day opens a [DayActionPanel] below the grid;
  * it is called with the date key and the new status (1, 0, or null to remove the entry).
  * When it is null (unsaved subject), days can't be tapped.
+ *
+ * [isWide] (desktop) uses bigger days and longer weekday labels.
  */
 @Composable
 fun AttendanceCalendar(
     days: Map<String, Int>,
     modifier: Modifier = Modifier,
+    isWide: Boolean = false,
     onStatusChange: ((date: String, status: Int?) -> Unit)? = null,
 ) {
     val today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
@@ -82,7 +91,7 @@ fun AttendanceCalendar(
     val cells: List<LocalDate?> =
         List(leadingBlanks) { null } + (0 until daysInMonth).map { visibleMonth.plus(it, DateTimeUnit.DAY) }
 
-    SectionCard(modifier = modifier, spacing = 12.dp) {
+    SectionCard(modifier = modifier, spacing = if (isWide) 14.dp else 12.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = "Attendance log",
@@ -109,11 +118,24 @@ fun AttendanceCalendar(
         ) {
             Text(
                 text = "${visibleMonth.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${visibleMonth.year}",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = if (isWide) 18.sp else 16.sp,
+                fontWeight = if (isWide) FontWeight.ExtraBold else FontWeight.Bold,
                 color = textPrimary,
                 modifier = Modifier.weight(1f),
             )
+            OutlinedButton(
+                onClick = {
+                    visibleMonth = LocalDate(today.year, today.month, 1)
+                    selectedDate = null
+                },
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, cardBorder),
+                contentPadding = PaddingValues(horizontal = 14.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = textPrimary),
+                modifier = Modifier.height(40.dp),
+            ) {
+                Text(text = "Today", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            }
             MonthNavButton(
                 icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = "Previous month",
@@ -134,7 +156,7 @@ fun AttendanceCalendar(
 
         // Weekday labels
         Row(modifier = Modifier.fillMaxWidth()) {
-            WeekDays.forEach { label ->
+            (if (isWide) WeekDaysLong else WeekDaysShort).forEach { label ->
                 Text(
                     text = label,
                     fontSize = 12.sp,
@@ -147,7 +169,7 @@ fun AttendanceCalendar(
         }
 
         // Day grid
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(if (isWide) 8.dp else 4.dp)) {
             cells.chunked(7).forEach { week ->
                 Row(modifier = Modifier.fillMaxWidth()) {
                     for (i in 0 until 7) {
@@ -163,6 +185,7 @@ fun AttendanceCalendar(
                                     isToday = date == today,
                                     isSelected = date == selectedDate,
                                     isEnabled = onStatusChange != null,
+                                    size = if (isWide) 52.dp else 44.dp,
                                     onClick = { selectedDate = if (date == selectedDate) null else date },
                                 )
                             }
@@ -196,7 +219,7 @@ fun AttendanceCalendar(
                 Box(Modifier.size(10.dp).clip(CircleShape).background(absentFill))
             }
             LegendItem(label = "Today") {
-                Box(Modifier.size(10.dp).border(1.5.dp, primary, CircleShape))
+                Box(Modifier.size(10.dp).border(2.dp, primary, CircleShape))
             }
         }
     }
@@ -209,6 +232,7 @@ private fun CalendarDay(
     isToday: Boolean,
     isSelected: Boolean,
     isEnabled: Boolean,
+    size: Dp,
     onClick: () -> Unit,
 ) {
     val fill: Color? =
@@ -235,7 +259,7 @@ private fun CalendarDay(
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .size(44.dp)
+            .size(size)
             .then(if (isSelected) Modifier.border(2.dp, textPrimary, CircleShape) else Modifier)
             .padding(3.dp)
             .clip(CircleShape)
@@ -247,7 +271,7 @@ private fun CalendarDay(
     ) {
         Text(
             text = date.day.toString(),
-            fontSize = 14.sp,
+            fontSize = if (size > 44.dp) 15.sp else 14.sp,
             fontWeight = if (fill != null || isToday) FontWeight.Bold else FontWeight.Medium,
             color = textColor,
         )

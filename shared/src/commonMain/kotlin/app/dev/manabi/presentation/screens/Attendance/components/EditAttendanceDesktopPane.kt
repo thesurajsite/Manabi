@@ -1,7 +1,7 @@
 package app.dev.manabi.presentation.screens.attendance.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +19,9 @@ import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.attendance.AttendanceViewModel
 import app.dev.manabi.presentation.theme.screenBackground
 import org.koin.compose.viewmodel.koinViewModel
+
+/** Pane width from which the cards and the calendar sit side by side. */
+private val TwoColumnMinWidth = 760.dp
 
 @Suppress("ktlint:standard:function-naming")
 @Composable
@@ -48,16 +51,19 @@ fun EditAttendanceDesktopPane(
     ) {
         EditAttendanceTopBar(
             title = if (attendance == null) "New subject" else "Edit subject",
+            isWide = true,
             onClose = viewModel::closeSubject,
             onDelete = if (attendance != null) ({ showDeleteConfirmation = true }) else null,
         )
 
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
             contentAlignment = Alignment.TopCenter,
         ) {
+            val twoColumns = maxWidth >= TwoColumnMinWidth
+
             EditAttendanceContent(
                 uiState = uiState,
                 onSubjectNameChange = viewModel::updateSubjectName,
@@ -65,8 +71,9 @@ fun EditAttendanceDesktopPane(
                 onRequirementChange = viewModel::updateRequirement,
                 onSave = { viewModel.saveAttendance(onSuccess = {}) },
                 onDayStatusChange = { date, status -> viewModel.setDayStatus(uiState.id, date, status) },
+                twoColumns = twoColumns,
                 modifier = Modifier
-                    .widthIn(max = 640.dp)
+                    .widthIn(max = if (twoColumns) 1100.dp else 640.dp)
                     .fillMaxSize(),
             )
         }

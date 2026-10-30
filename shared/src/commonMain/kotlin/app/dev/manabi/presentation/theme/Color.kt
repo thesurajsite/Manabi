@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 val primary = Color(0xFF6D28D9)
 val primarySoft = Color(0xFFEFE8FC)
+val primaryTint = Color(0xFFF3EEFD)
+val primaryTintBorder = Color(0xFFDCCDF8)
 
 // Surfaces
 val screenBackground = Color(0xFFF6F5FA)
