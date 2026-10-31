@@ -19,6 +19,10 @@ compose.desktop {
     application {
         mainClass = "app.dev.manabi.MainKt"
 
+        buildTypes.release.proguard {
+            configurationFiles.from(project.file("compose-desktop.pro"))
+        }
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Manabi"
@@ -39,6 +43,21 @@ compose.desktop {
             }
         }
     }
+}
+// Microsoft Store package (unsigned; the Store signs it): ./gradlew :desktopApp:packageMsix
+// Needs makeappx.exe from the Windows SDK, or set MAKEAPPX to its path.
+tasks.register<Exec>("packageMsix") {
+    group = "compose desktop"
+    description = "Builds the Microsoft Store .msix from the release app image."
+    dependsOn("createReleaseDistributable")
+    val version = compose.desktop.application.nativeDistributions.packageVersion
+    commandLine(
+        "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
+        "-File", file("msix/build-msix.ps1").absolutePath,
+        "-AppDir", layout.buildDirectory.dir("compose/binaries/main-release/app/Manabi").get().asFile.absolutePath,
+        "-Version", checkNotNull(version),
+        "-OutFile", layout.buildDirectory.file("compose/binaries/main-release/msix/Manabi-$version.msix").get().asFile.absolutePath,
+    )
 }
 // Styled drag-and-drop installer: ./gradlew :desktopApp:packageStyledDmg
 tasks.register<Exec>("packageStyledDmg") {
