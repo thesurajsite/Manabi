@@ -21,8 +21,35 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "app.dev.manabi"
+            packageName = "Manabi"
             packageVersion = "1.0.0"
+
+            macOS {
+                bundleID = "app.dev.manabi"
+                iconFile.set(project.file("icons/manabi.icns"))
+            }
+            windows {
+                iconFile.set(project.file("icons/manabi.ico"))
+                shortcut = true
+                menu = true
+            }
+            linux {
+                packageName = "manabi"
+                iconFile.set(project.file("icons/manabi.png"))
+            }
         }
     }
+}
+// Styled drag-and-drop installer: ./gradlew :desktopApp:packageStyledDmg
+tasks.register<Exec>("packageStyledDmg") {
+    group = "compose desktop"
+    description = "Builds the \"Install Manabi\" drag-to-Applications DMG."
+    dependsOn("createDistributable")
+    val version = compose.desktop.application.nativeDistributions.packageVersion
+    commandLine(
+        "bash",
+        file("dmg/build-dmg.sh").absolutePath,
+        layout.buildDirectory.file("compose/binaries/main/app/Manabi.app").get().asFile.absolutePath,
+        layout.buildDirectory.file("compose/binaries/main/styled-dmg/Manabi-$version.dmg").get().asFile.absolutePath,
+    )
 }

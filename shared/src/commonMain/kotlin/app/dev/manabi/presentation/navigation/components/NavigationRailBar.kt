@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +30,8 @@ import app.dev.manabi.presentation.theme.cardBorder
 import app.dev.manabi.presentation.theme.primary
 import app.dev.manabi.presentation.theme.primarySoft
 import app.dev.manabi.presentation.theme.textMuted
+import manabi.shared.generated.resources.Res
+import manabi.shared.generated.resources.manabi_logo
 import org.jetbrains.compose.resources.painterResource
 
 /** Desktop side navigation: app mark on top, then an icon + label item per main screen. */
@@ -67,15 +67,11 @@ fun NavigationRailBar(
 
 @Composable
 private fun AppMark(modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(44.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(primary),
-    ) {
-        Text(text = "M", fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
-    }
+    Image(
+        painter = painterResource(Res.drawable.manabi_logo),
+        contentDescription = "Manabi",
+        modifier = modifier.size(44.dp),
+    )
 }
 
 @Composable
