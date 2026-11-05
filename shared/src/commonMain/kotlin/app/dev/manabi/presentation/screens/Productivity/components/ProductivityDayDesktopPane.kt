@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.dev.manabi.domain.model.ProductivityDay
 import app.dev.manabi.domain.model.ProductivityTask
+import app.dev.manabi.presentation.components.DeleteButton
 import app.dev.manabi.presentation.screens.Productivity.toDayTitle
 import app.dev.manabi.presentation.theme.cardBackground
 import app.dev.manabi.presentation.theme.cardBorder
@@ -50,6 +51,7 @@ fun ProductivityDayDesktopPane(
     onToggleTask: (ProductivityTask) -> Unit,
     onRemoveTask: (ProductivityTask) -> Unit,
     onChangeDate: () -> Unit,
+    onDeleteDay: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(
@@ -80,6 +82,14 @@ fun ProductivityDayDesktopPane(
                         fontSize = 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = textPrimary,
+                    )
+                }
+                if (day.tasks.isNotEmpty()) {
+                    DeleteButton(
+                        label = "Delete day",
+                        onClick = onDeleteDay,
+                        showLabel = true,
+                        modifier = Modifier.padding(end = 8.dp),
                     )
                 }
                 OutlinedButton(

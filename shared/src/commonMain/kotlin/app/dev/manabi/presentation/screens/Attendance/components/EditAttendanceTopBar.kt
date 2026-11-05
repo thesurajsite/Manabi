@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.dev.manabi.presentation.components.DeleteButton
 import app.dev.manabi.presentation.theme.textMuted
 import app.dev.manabi.presentation.theme.textPrimary
 
@@ -74,7 +75,11 @@ fun EditAttendanceTopBar(
         }
 
         if (onDelete != null) {
-            DeleteSubjectButton(onClick = onDelete, showLabel = isWide)
+            DeleteButton(
+                label = if (isWide) "Delete" else "Delete subject",
+                onClick = onDelete,
+                showLabel = isWide,
+            )
         }
 
         if (onClose != null) {

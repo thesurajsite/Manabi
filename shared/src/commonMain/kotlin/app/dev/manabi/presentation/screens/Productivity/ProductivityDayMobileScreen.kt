@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.dev.manabi.presentation.screens.Productivity.components.DeleteDayDialog
 import app.dev.manabi.presentation.screens.Productivity.components.ProductivityDatePicker
 import app.dev.manabi.presentation.screens.Productivity.components.ProductivityDayProgressCard
 import app.dev.manabi.presentation.screens.Productivity.components.ProductivityDayTopBar
@@ -38,6 +39,7 @@ fun ProductivityDayMobileScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val draft by viewModel.draft.collectAsStateWithLifecycle()
     var isPickerOpen by remember { mutableStateOf(false) }
+    var isDeleteDialogOpen by remember { mutableStateOf(false) }
     val day = uiState.dayFor(date)
 
     Scaffold(
@@ -47,6 +49,7 @@ fun ProductivityDayMobileScreen(
                 title = date.toDayTitle(),
                 onBack = onNavigateUp,
                 onChangeDate = { isPickerOpen = true },
+                onDeleteDay = if (day.tasks.isNotEmpty()) ({ isDeleteDialogOpen = true }) else null,
                 modifier = Modifier.statusBarsPadding(),
             )
         },
@@ -78,6 +81,17 @@ fun ProductivityDayMobileScreen(
                 onRemoveTask = viewModel::deleteTask,
             )
         }
+    }
+
+    if (isDeleteDialogOpen) {
+        DeleteDayDialog(
+            day = day,
+            onConfirm = {
+                isDeleteDialogOpen = false
+                viewModel.deleteDay(date, onDeleted = onNavigateUp)
+            },
+            onDismiss = { isDeleteDialogOpen = false },
+        )
     }
 
     if (isPickerOpen) {

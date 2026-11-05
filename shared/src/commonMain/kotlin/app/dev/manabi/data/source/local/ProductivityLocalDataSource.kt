@@ -21,4 +21,8 @@ class ProductivityLocalDataSource(
     suspend fun deleteTask(id: Long) {
         productivityDao.deleteTask(id)
     }
+
+    suspend fun deleteTasksForDate(date: String) {
+        productivityDao.deleteTasksForDate(date)
+    }
 }

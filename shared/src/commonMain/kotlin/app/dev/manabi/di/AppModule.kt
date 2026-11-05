@@ -12,6 +12,7 @@ import app.dev.manabi.domain.repository.ProductivityRepository
 import app.dev.manabi.domain.usecase.AddAttendanceUseCase
 import app.dev.manabi.domain.usecase.AddProductivityTaskUseCase
 import app.dev.manabi.domain.usecase.DeleteAttendanceUseCase
+import app.dev.manabi.domain.usecase.DeleteProductivityDayUseCase
 import app.dev.manabi.domain.usecase.DeleteProductivityTaskUseCase
 import app.dev.manabi.domain.usecase.GetAttendanceUseCase
 import app.dev.manabi.domain.usecase.GetProductivityTasksUseCase
@@ -51,6 +52,7 @@ val appModule = module {
     singleOf(::AddProductivityTaskUseCase)
     singleOf(::SetProductivityTaskDoneUseCase)
     singleOf(::DeleteProductivityTaskUseCase)
+    singleOf(::DeleteProductivityDayUseCase)
 
     // ViewModels
     viewModelOf(::AttendanceViewModel)

@@ -1,4 +1,4 @@
-package app.dev.manabi.presentation.screens.attendance.components
+package app.dev.manabi.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,10 +26,11 @@ private val DeleteBorder = Color(0xFFF1D0D0)
 
 /**
  * Outlined red delete button. Icon-only by default (mobile top bar);
- * [showLabel] adds the "Delete" text (desktop top bar).
+ * [showLabel] adds [label] as text (desktop top bar).
  */
 @Composable
-fun DeleteSubjectButton(
+fun DeleteButton(
+    label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     showLabel: Boolean = false,
@@ -45,7 +46,7 @@ fun DeleteSubjectButton(
         ) {
             Icon(imageVector = Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
-            Text(text = "Delete", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(text = label, fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
     } else {
         OutlinedIconButton(
@@ -56,7 +57,7 @@ fun DeleteSubjectButton(
         ) {
             Icon(
                 imageVector = Icons.Outlined.Delete,
-                contentDescription = "Delete subject",
+                contentDescription = label,
                 tint = absentRed,
                 modifier = Modifier.size(20.dp),
             )

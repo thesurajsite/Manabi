@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.dev.manabi.presentation.components.DeleteButton
 import app.dev.manabi.presentation.theme.textMuted
 import app.dev.manabi.presentation.theme.textPrimary
 
@@ -26,6 +27,7 @@ fun ProductivityDayTopBar(
     onBack: () -> Unit,
     onChangeDate: () -> Unit,
     modifier: Modifier = Modifier,
+    onDeleteDay: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -55,6 +57,9 @@ fun ProductivityDayTopBar(
                 fontWeight = FontWeight.Bold,
                 color = textPrimary,
             )
+        }
+        if (onDeleteDay != null) {
+            DeleteButton(label = "Delete day", onClick = onDeleteDay)
         }
         ProductivityCalendarButton(contentDescription = "Change date", onClick = onChangeDate)
     }

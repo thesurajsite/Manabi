@@ -46,4 +46,8 @@ class ProductivityRepositoryImpl(
     override suspend fun deleteTask(id: Long) {
         localDataSource.deleteTask(id)
     }
+
+    override suspend fun deleteDay(date: LocalDate) {
+        localDataSource.deleteTasksForDate(date.toString())
+    }
 }

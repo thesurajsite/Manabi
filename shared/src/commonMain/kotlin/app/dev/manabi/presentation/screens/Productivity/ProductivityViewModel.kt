@@ -8,6 +8,7 @@ import app.dev.manabi.domain.model.ProductivityTask
 import app.dev.manabi.domain.model.buildProductivitySummary
 import app.dev.manabi.domain.model.toProductivityDays
 import app.dev.manabi.domain.usecase.AddProductivityTaskUseCase
+import app.dev.manabi.domain.usecase.DeleteProductivityDayUseCase
 import app.dev.manabi.domain.usecase.DeleteProductivityTaskUseCase
 import app.dev.manabi.domain.usecase.GetProductivityTasksUseCase
 import app.dev.manabi.domain.usecase.SetProductivityTaskDoneUseCase
@@ -44,6 +45,7 @@ class ProductivityViewModel(
     private val addProductivityTaskUseCase: AddProductivityTaskUseCase,
     private val setProductivityTaskDoneUseCase: SetProductivityTaskDoneUseCase,
     private val deleteProductivityTaskUseCase: DeleteProductivityTaskUseCase,
+    private val deleteProductivityDayUseCase: DeleteProductivityDayUseCase,
 ) : ViewModel() {
 
     // Restarts whenever the screen comes back, and re-checks each minute so a new day is picked up.
@@ -122,6 +124,16 @@ class ProductivityViewModel(
     fun deleteTask(task: ProductivityTask) {
         viewModelScope.launch {
             deleteProductivityTaskUseCase(task.id)
+        }
+    }
+
+    /** Removes every task on [date]. Desktop then returns to today, and mobile leaves the day in [onDeleted]. */
+    fun deleteDay(date: LocalDate, onDeleted: () -> Unit = {}) {
+        viewModelScope.launch {
+            deleteProductivityDayUseCase(date)
+            _selectedDate.value = null
+            _draft.value = ""
+            onDeleted()
         }
     }
 

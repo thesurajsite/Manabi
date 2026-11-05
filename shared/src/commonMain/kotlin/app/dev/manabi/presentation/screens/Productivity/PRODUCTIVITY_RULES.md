@@ -54,6 +54,9 @@ Display formats:
    which shows **No tasks yet**.
 5. Recent days are sorted newest date first, so a day planned ahead sits above today.
 6. Until the first day is planned, Recent days shows **No days planned yet**.
+7. **Delete day** removes every task on that date at once, after the user confirms. It appears on
+   the day screen only while the day has tasks. Mobile then returns to the days list, and desktop
+   returns to today.
 
 There is no day table, so these rules hold automatically: a day exists only while it has task rows.
 

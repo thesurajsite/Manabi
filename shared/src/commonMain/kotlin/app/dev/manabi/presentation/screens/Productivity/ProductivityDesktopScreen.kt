@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.dev.manabi.presentation.screens.Productivity.components.DeleteDayDialog
 import app.dev.manabi.presentation.screens.Productivity.components.ProductivityDatePicker
 import app.dev.manabi.presentation.screens.Productivity.components.ProductivityDayDesktopPane
 import app.dev.manabi.presentation.screens.Productivity.components.ProductivityListDesktopPane
@@ -29,7 +30,9 @@ fun ProductivityDesktopScreen(modifier: Modifier) {
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val draft by viewModel.draft.collectAsStateWithLifecycle()
     var isPickerOpen by remember { mutableStateOf(false) }
+    var isDeleteDialogOpen by remember { mutableStateOf(false) }
     val activeDate = selectedDate ?: uiState.today
+    val activeDay = uiState.dayFor(activeDate)
 
     Row(modifier = modifier.fillMaxSize()) {
         ProductivityListDesktopPane(
@@ -44,15 +47,27 @@ fun ProductivityDesktopScreen(modifier: Modifier) {
 
         Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
             ProductivityDayDesktopPane(
-                day = uiState.dayFor(activeDate),
+                day = activeDay,
                 draft = draft,
                 onDraftChange = viewModel::updateDraft,
                 onAddTask = { viewModel.addTask(activeDate) },
                 onToggleTask = viewModel::toggleTask,
                 onRemoveTask = viewModel::deleteTask,
                 onChangeDate = { isPickerOpen = true },
+                onDeleteDay = { isDeleteDialogOpen = true },
             )
         }
+    }
+
+    if (isDeleteDialogOpen) {
+        DeleteDayDialog(
+            day = activeDay,
+            onConfirm = {
+                isDeleteDialogOpen = false
+                viewModel.deleteDay(activeDate)
+            },
+            onDismiss = { isDeleteDialogOpen = false },
+        )
     }
 
     if (isPickerOpen) {

@@ -18,4 +18,7 @@ interface ProductivityDao {
 
     @Query("DELETE FROM ProductivityTask WHERE id = :id")
     suspend fun deleteTask(id: Long)
+
+    @Query("DELETE FROM ProductivityTask WHERE date = :date")
+    suspend fun deleteTasksForDate(date: String)
 }
