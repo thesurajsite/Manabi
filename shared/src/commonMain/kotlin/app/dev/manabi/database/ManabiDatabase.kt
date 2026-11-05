@@ -1,5 +1,6 @@
 package app.dev.manabi.database
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -10,13 +11,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
 @Database(
-    entities = [AttendanceEntity::class],
-    version = 2,
+    entities = [AttendanceEntity::class, ProductivityTaskEntity::class],
+    version = 3,
+    autoMigrations = [AutoMigration(from = 2, to = 3)],
 )
 @TypeConverters(AttendanceConverters::class)
 @ConstructedBy(ManabiDatabaseConstructor::class)
 abstract class ManabiDatabase : RoomDatabase() {
     abstract fun attendanceDao(): AttendanceDao
+    abstract fun productivityDao(): ProductivityDao
 }
 
 @Suppress("NO_ACTUAL_FOR_EXPECT", "KotlinNoActualForExpect")

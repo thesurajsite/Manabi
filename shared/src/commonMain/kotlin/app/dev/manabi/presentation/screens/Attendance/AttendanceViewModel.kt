@@ -210,11 +210,10 @@ class AttendanceViewModel(
             Month.NOVEMBER -> 11
             Month.DECEMBER -> 12
         }
-        return "%02d-%02d-%04d".format(
-            localDateTime.day,
-            monthNum,
-            localDateTime.year,
-        )
+        val day = localDateTime.day.toString().padStart(2, '0')
+        val month = monthNum.toString().padStart(2, '0')
+        val year = localDateTime.year.toString().padStart(4, '0')
+        return "$day-$month-$year"
     }
 
     fun todayStatusFor(subject: Attendance): AttendanceStatus = subject.statusFor(currentDateString())

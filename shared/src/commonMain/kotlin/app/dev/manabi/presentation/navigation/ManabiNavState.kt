@@ -6,6 +6,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import app.dev.manabi.domain.model.Attendance
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun rememberManabiNavState(
@@ -39,6 +40,17 @@ class ManabiNavState(
 
     fun navigateToSubjectDetails(attendance: Attendance) {
         navController.navigate(Screen.SubjectDetails(attendance))
+    }
+
+    fun navigateToProductivityDay(date: LocalDate) {
+        navController.navigate(Screen.ProductivityDay(date.toString()))
+    }
+
+    /** Swaps the open day for [date], so Back still returns to the days list. */
+    fun replaceProductivityDay(date: LocalDate) {
+        navController.navigate(Screen.ProductivityDay(date.toString())) {
+            popUpTo<Screen.ProductivityDay> { inclusive = true }
+        }
     }
 
     fun navigateUp() {

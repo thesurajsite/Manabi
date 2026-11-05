@@ -21,6 +21,7 @@ import app.dev.manabi.presentation.theme.cardBorder
 fun SectionCard(
     modifier: Modifier = Modifier,
     spacing: Dp = 14.dp,
+    contentPadding: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(20.dp)
@@ -30,7 +31,7 @@ fun SectionCard(
             .clip(shape)
             .background(cardBackground)
             .border(1.dp, cardBorder, shape)
-            .padding(16.dp),
+            .padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(spacing),
         content = content,
     )

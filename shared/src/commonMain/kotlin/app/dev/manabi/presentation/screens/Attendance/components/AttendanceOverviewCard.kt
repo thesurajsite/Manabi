@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.dev.manabi.presentation.components.CircularProgressBar
 import app.dev.manabi.presentation.components.SectionCard
 import app.dev.manabi.presentation.components.StatusPill
 import app.dev.manabi.presentation.theme.absentSoft

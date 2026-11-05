@@ -11,8 +11,10 @@ import androidx.savedstate.read
 import androidx.savedstate.write
 import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.MainScreen
+import app.dev.manabi.presentation.screens.Productivity.ProductivityDayMobileScreen
 import app.dev.manabi.presentation.screens.attendance.EditAttendanceMobileScreen
 import app.dev.manabi.presentation.screens.attendance.SubjectDetailsMobileScreen
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlin.reflect.typeOf
 
@@ -51,6 +53,7 @@ fun ManabiNavHost(
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
                 onNavigateToSubjectDetails = navState::navigateToSubjectDetails,
+                onNavigateToProductivityDay = navState::navigateToProductivityDay,
             )
         }
         composable<Screen.MainGraph.Productivity> {
@@ -59,6 +62,7 @@ fun ManabiNavHost(
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
                 onNavigateToSubjectDetails = navState::navigateToSubjectDetails,
+                onNavigateToProductivityDay = navState::navigateToProductivityDay,
             )
         }
         composable<Screen.MainGraph.Schedule> {
@@ -67,6 +71,7 @@ fun ManabiNavHost(
                 onNavigateToMain = navState::navigateToMain,
                 onNavigateToEditAttendance = navState::navigateToEditAttendance,
                 onNavigateToSubjectDetails = navState::navigateToSubjectDetails,
+                onNavigateToProductivityDay = navState::navigateToProductivityDay,
             )
         }
         composable<Screen.EditAttendance>(
@@ -85,6 +90,14 @@ fun ManabiNavHost(
             SubjectDetailsMobileScreen(
                 attendance = destination.attendance,
                 onNavigateUp = { navState.navigateUp() },
+            )
+        }
+        composable<Screen.ProductivityDay> { backStackEntry ->
+            val destination: Screen.ProductivityDay = backStackEntry.toRoute()
+            ProductivityDayMobileScreen(
+                date = LocalDate.parse(destination.date),
+                onNavigateUp = { navState.navigateUp() },
+                onChangeDate = navState::replaceProductivityDay,
             )
         }
     }

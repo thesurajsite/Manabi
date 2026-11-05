@@ -13,7 +13,7 @@ fun getDatabaseBuilder(): RoomDatabase.Builder<ManabiDatabase> {
         name = dbFilePath,
         factory = { ManabiDatabaseConstructor.initialize() }
     )
-        .fallbackToDestructiveMigration()
+        .fallbackToDestructiveMigration(dropAllTables = true)
 }
 
 @OptIn(ExperimentalForeignApi::class)

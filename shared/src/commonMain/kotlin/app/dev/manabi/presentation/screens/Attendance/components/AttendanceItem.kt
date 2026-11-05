@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.domain.model.AttendanceStatus
+import app.dev.manabi.presentation.components.CircularProgressBar
 import app.dev.manabi.presentation.theme.absentFill
 import app.dev.manabi.presentation.theme.absentRed
 import app.dev.manabi.presentation.theme.absentText

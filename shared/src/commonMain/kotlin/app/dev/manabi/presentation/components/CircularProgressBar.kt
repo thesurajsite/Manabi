@@ -1,4 +1,4 @@
-package app.dev.manabi.presentation.screens.attendance.components
+package app.dev.manabi.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -31,6 +31,7 @@ fun CircularProgressBar(
     trackColor: Color = Color(0x33A78BFA),
     textColor: Color = Color(0xFF6D28D9),
     fontSize: TextUnit = TextUnit.Unspecified,
+    fontWeight: FontWeight = FontWeight.SemiBold,
     label: String? = null,
     animationDuration: Int = 600,
     modifier: Modifier = Modifier,
@@ -89,7 +90,7 @@ fun CircularProgressBar(
                 text = text,
                 color = textColor,
                 fontSize = computedFontSize,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = fontWeight
             )
         }
 

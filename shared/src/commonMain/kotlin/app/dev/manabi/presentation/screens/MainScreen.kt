@@ -15,6 +15,7 @@ import app.dev.manabi.presentation.navigation.Screen
 import app.dev.manabi.presentation.navigation.TopLevelNavHost
 import app.dev.manabi.presentation.navigation.components.BottomBar
 import app.dev.manabi.presentation.navigation.components.NavigationRailBar
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun MainScreen(
@@ -22,6 +23,7 @@ fun MainScreen(
     onNavigateToMain: (Screen) -> Unit,
     onNavigateToEditAttendance: (Attendance?) -> Unit,
     onNavigateToSubjectDetails: (Attendance) -> Unit,
+    onNavigateToProductivityDay: (LocalDate) -> Unit,
 ) {
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -42,6 +44,7 @@ fun MainScreen(
                     isMobile = true,
                     onNavigateToEditAttendance = onNavigateToEditAttendance,
                     onNavigateToSubjectDetails = onNavigateToSubjectDetails,
+                    onNavigateToProductivityDay = onNavigateToProductivityDay,
                     modifier = Modifier.padding(paddingValues),
                 )
             }
@@ -66,6 +69,7 @@ fun MainScreen(
                         isMobile = false,
                         onNavigateToEditAttendance = onNavigateToEditAttendance,
                         onNavigateToSubjectDetails = onNavigateToSubjectDetails,
+                    onNavigateToProductivityDay = onNavigateToProductivityDay,
                         modifier = Modifier.fillMaxSize(),
                     )
                 }

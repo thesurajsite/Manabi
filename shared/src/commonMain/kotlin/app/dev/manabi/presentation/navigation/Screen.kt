@@ -24,4 +24,7 @@ sealed class Screen {
 
     @Serializable
     data class SubjectDetails(val attendance: Attendance) : Screen()
+
+    @Serializable
+    data class ProductivityDay(val date: String) : Screen()
 }

@@ -19,9 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.dev.manabi.presentation.components.MonthNavButton
 import app.dev.manabi.presentation.components.SectionCard
 import app.dev.manabi.presentation.theme.absentFill
 import app.dev.manabi.presentation.theme.absentText
@@ -275,22 +273,6 @@ private fun CalendarDay(
             fontWeight = if (fill != null || isToday) FontWeight.Bold else FontWeight.Medium,
             color = textColor,
         )
-    }
-}
-
-@Composable
-private fun MonthNavButton(
-    icon: ImageVector,
-    contentDescription: String,
-    onClick: () -> Unit,
-) {
-    OutlinedIconButton(
-        onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, cardBorder),
-        modifier = Modifier.size(40.dp),
-    ) {
-        Icon(imageVector = icon, contentDescription = contentDescription, tint = textPrimary)
     }
 }
 

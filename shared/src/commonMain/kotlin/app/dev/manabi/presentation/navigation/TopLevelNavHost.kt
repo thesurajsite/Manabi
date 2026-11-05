@@ -6,6 +6,7 @@ import app.dev.manabi.domain.model.Attendance
 import app.dev.manabi.presentation.screens.Productivity.ProductivityScreen
 import app.dev.manabi.presentation.screens.Schedule.ScheduleScreen
 import app.dev.manabi.presentation.screens.attendance.AttendanceScreen
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun TopLevelNavHost(
@@ -13,6 +14,7 @@ fun TopLevelNavHost(
     isMobile: Boolean,
     onNavigateToEditAttendance: (Attendance?) -> Unit,
     onNavigateToSubjectDetails: (Attendance) -> Unit,
+    onNavigateToProductivityDay: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (currentScreen) {
@@ -25,6 +27,7 @@ fun TopLevelNavHost(
 
         Screen.MainGraph.Productivity -> ProductivityScreen(
             isMobile = isMobile,
+            onNavigateToDay = onNavigateToProductivityDay,
             modifier = modifier,
         )
 

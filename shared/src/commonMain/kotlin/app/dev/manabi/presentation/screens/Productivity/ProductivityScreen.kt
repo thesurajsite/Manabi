@@ -1,26 +1,21 @@
 package app.dev.manabi.presentation.screens.Productivity
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun ProductivityScreen(
     isMobile: Boolean,
-    modifier: Modifier = Modifier
+    onNavigateToDay: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Feature coming soon",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+    if (isMobile) {
+        ProductivityMobileScreen(
+            onNavigateToDay = onNavigateToDay,
+            modifier = modifier,
         )
+    } else {
+        ProductivityDesktopScreen(modifier)
     }
 }

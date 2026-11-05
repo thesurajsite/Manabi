@@ -101,6 +101,7 @@ private fun RailItem(
         Text(
             text = item.label,
             fontSize = 11.sp,
+            letterSpacing = 0.sp,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold,
             color = contentColor,
             maxLines = 1,
