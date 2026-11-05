@@ -5,7 +5,10 @@ import androidx.room.RoomDatabase
 import java.io.File
 
 fun getDatabaseBuilder(): RoomDatabase.Builder<ManabiDatabase> {
-    val dbFile = File(System.getProperty("java.io.tmpdir"), "manabi.db")
+    val dbFile = prepareDatabaseFile(
+        dataDirectory = appDataDirectory(),
+        legacyDirectory = File(System.getProperty("java.io.tmpdir")),
+    )
     return Room.databaseBuilder<ManabiDatabase>(
         name = dbFile.absolutePath,
         factory = { ManabiDatabaseConstructor.initialize() }
