@@ -6,7 +6,18 @@ Run every command from the project root.
 
 This applies to every platform: Android, iOS, Windows, Mac and Linux.
 
-When someone asks for a build, ask **only one question** before building:
+When someone asks for a build, **first check the commits since the last release commit.** A release commit is one whose message starts with `release version`, for example `release version 1.0.1`.
+
+```bash
+git log -1 --format='%h %s' --grep='^release version'
+git log --oneline <release commit>..HEAD
+```
+
+- **No commits after the release commit:** nothing has changed since the version was raised, so no version update is needed. Don't ask any question, and build with the current version.
+- **Commits after the release commit:** changes have been made, so ask the question below.
+- **No release commit at all:** ask the question below.
+
+When the question is needed, ask **only this one** before building:
 
 **Is this build for publishing or for testing?**
 
@@ -19,13 +30,14 @@ Don't ask about the app version. It follows from the answer:
 
 Don't ask whether the database changed. Find out by reading the commits since the previous publish.
 
-1. **Find the previous publish commit.** It is the latest release tag:
+1. **Find the previous publish commit.** It is the latest release commit or the latest release tag, whichever is newer:
 
    ```bash
+   git log -1 --format='%h %s' --grep='^release version'
    git describe --tags --abbrev=0
    ```
 
-   If there is no tag, ask which commit was last published.
+   If there is neither, ask which commit was last published.
 
 2. **List the database commits since then,** replacing `<previous>` with that tag or commit:
 
