@@ -6,18 +6,48 @@ Run every command from the project root.
 
 This applies to every platform: Android, iOS, Windows, Mac and Linux.
 
-When someone asks for a build, ask these questions **before building**:
+When someone asks for a build, ask **only one question** before building:
 
-1. **Is this build for publishing or for testing?**
-2. **Have you made any database changes?**
-3. **Do you want to update the database version?**
-4. **Do you want to update the app version?**
+**Is this build for publishing or for testing?**
 
-Then wait for the answers, and follow them:
+Don't ask about the app version. It follows from the answer:
 
-- **Publishing:** also follow [Before every release](#before-every-release).
-- **Database changes:** the database version needs raising, with a migration. See step 4 of the release checklist.
-- **Updating versions:** make the change before building. The version locations are in step 3 of the release checklist.
+- **Testing:** build it, and leave the app version as it is.
+- **Publishing:** raise the app version, then follow [Before every release](#before-every-release). Add 1 to the last number (1.0.1 becomes 1.0.2) unless told otherwise.
+
+### Check the database for a publishing build
+
+Don't ask whether the database changed. Find out by reading the commits since the previous publish.
+
+1. **Find the previous publish commit.** It is the latest release tag:
+
+   ```bash
+   git describe --tags --abbrev=0
+   ```
+
+   If there is no tag, ask which commit was last published.
+
+2. **List the database commits since then,** replacing `<previous>` with that tag or commit:
+
+   ```bash
+   git log --oneline <previous>..HEAD -- shared/src/commonMain/kotlin/app/dev/manabi/database shared/schemas
+   ```
+
+3. **Check if the database version already changed in those commits:**
+
+   ```bash
+   git diff <previous>..HEAD -- shared/src/commonMain/kotlin/app/dev/manabi/database/ManabiDatabase.kt
+   ```
+
+4. **Follow the result:**
+
+   | Commits show | What to do |
+   |---|---|
+   | No database changes | Leave the database version alone, and don't ask |
+   | Database changes, and the version was already raised while building the feature | Leave it alone, and don't ask |
+   | Database changes, and the version was not raised | Tell the user what changed, and ask if they want to change the database version |
+
+Only change the database version if the commits show database changes. If it is raised, add a migration too, as in step 4 of the release checklist.
 
 ## Before every release
 
