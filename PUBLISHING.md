@@ -84,6 +84,8 @@ Only change the database version if the commits show database changes. If it is 
    | iOS | `iosApp/Configuration/Config.xcconfig` | `CURRENT_PROJECT_VERSION`, `MARKETING_VERSION` |
    | Desktop | `desktopApp/build.gradle.kts` | `packageVersion` |
 
+   After changing the version, **ask the user to sync the project** (Gradle sync in Android Studio) so the IDE picks up the new values. Wait for them to confirm before building.
+
 4. **Check the database.** If any entity or table changed:
 
    - Raise `version` in `shared/src/commonMain/kotlin/app/dev/manabi/database/ManabiDatabase.kt`.
