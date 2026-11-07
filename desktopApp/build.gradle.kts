@@ -26,7 +26,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Manabi"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
 
             macOS {
                 bundleID = "app.dev.manabi"
